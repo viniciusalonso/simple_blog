@@ -1,13 +1,20 @@
 defmodule SimpleBlog.Reader.PostsTest do
   use ExUnit.Case
-  # doctest SimpleBlog.Reader.Posts
 
   describe "read_from_dir" do
     setup do
       Mix.Tasks.SimpleBlog.Post.New.run(["my first job day", "blog_test"])
       Mix.Tasks.SimpleBlog.Post.New.run(["10 tips for a junior develop", "blog_test"])
 
-      # on_exit(fn -> File.rm_rf("blog_test") end)
+      on_exit(fn ->
+        {:ok, files} = File.ls("blog_test/_posts/")
+
+        full_paths =
+          files
+          |> Enum.filter(&String.ends_with?(&1, ".md"))
+
+        Enum.each(full_paths, &File.rm("blog_test/_posts/" <> &1))
+      end)
     end
 
     test "returns only markdown content" do
