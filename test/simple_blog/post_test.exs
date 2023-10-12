@@ -7,7 +7,7 @@ defmodule SimpleBlog.PostTest do
       title = "Introduction to elixir"
       date = ~D[2023-10-04]
       filename = SimpleBlog.Post.generate_filename(%SimpleBlog.Post{title: title, date: date})
-      assert "blog/_posts/2023-10-04-introduction-to-elixir.md" == filename
+      assert "2023-10-04-introduction-to-elixir.md" == filename
     end
   end
 end

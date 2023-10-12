@@ -8,8 +8,14 @@ defmodule Mix.Tasks.SimpleBlog.Server.Start do
 
   @impl Mix.Task
   def run([]) do
-    webserver = {Plug.Cowboy, plug: SimpleBlog.Server, scheme: :http, options: [port: 4000]}
-    {:ok, _} = Supervisor.start_link([webserver], strategy: :one_for_one)
+    webserver = [
+      {
+        Plug.Cowboy,
+        plug: SimpleBlog.Server, scheme: :http, options: [port: 4000]
+      }
+    ]
+
+    {:ok, _} = Supervisor.start_link(webserver, strategy: :one_for_one)
     Logger.info("Server running on localhost:4000")
     Process.sleep(:infinity)
   end

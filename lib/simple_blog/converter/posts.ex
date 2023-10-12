@@ -1,4 +1,4 @@
-defmodule SimpleBlog.PostsTransform do
+defmodule SimpleBlog.Converter.Posts do
   require Earmark
 
   def markdown_to_html(files) do

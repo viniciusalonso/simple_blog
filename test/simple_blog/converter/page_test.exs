@@ -1,6 +1,6 @@
-defmodule SimpleBlog.RendererTest do
+defmodule SimpleBlog.Converter.PageTest do
   use ExUnit.Case
-  doctest SimpleBlog.Renderer
+  doctest SimpleBlog.Converter.Page
 
   describe "exx_to_html" do
     test "transform exx in html" do
@@ -32,7 +32,7 @@ defmodule SimpleBlog.RendererTest do
       </html>
       """
 
-      html = SimpleBlog.Renderer.exx_to_html({:ok, exx}, posts_html)
+      html = SimpleBlog.Converter.Page.exx_to_html({:ok, exx}, posts_html)
       assert normalize(output) == normalize(html)
     end
   end

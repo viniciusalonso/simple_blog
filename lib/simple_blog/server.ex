@@ -7,17 +7,23 @@ defmodule SimpleBlog.Server do
   require Logger
   require Earmark
 
-  def init(_options) do
+  def init(options) do
     Logger.info("Initializing server ...")
+    IO.inspect(options)
   end
 
-  def call(conn, _opts) do
-    files = SimpleBlog.PostsReader.read_from_dir(File.ls("blog/_posts"))
-    html = SimpleBlog.PostsTransform.markdown_to_html(files)
+  def call(conn, opts) do
+    IO.inspect("jjjjjjjjjjj")
+    IO.inspect(opts)
+
+    posts_html =
+      "blog"
+      |> SimpleBlog.Reader.Posts.read_from_dir()
+      |> SimpleBlog.Converter.Posts.markdown_to_html()
 
     result =
       File.read("blog/index.html.eex")
-      |> SimpleBlog.Renderer.exx_to_html(html)
+      |> SimpleBlog.Converter.Page.exx_to_html(posts_html)
 
     conn
     |> put_resp_content_type("text/html")

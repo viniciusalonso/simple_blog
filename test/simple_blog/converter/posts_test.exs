@@ -1,6 +1,6 @@
-defmodule SimpleBlog.PostsTransformTest do
+defmodule SimpleBlog.Converter.PostsTest do
   use ExUnit.Case
-  doctest SimpleBlog.PostsTransform
+  doctest SimpleBlog.Converter.Posts
 
   describe "markdown_to_html" do
     test "transform markdown in html" do
@@ -14,7 +14,7 @@ defmodule SimpleBlog.PostsTransformTest do
         "<p>\nanother <strong>markdown</strong> test</p>\n"
       ]
 
-      html = SimpleBlog.PostsTransform.markdown_to_html(input)
+      html = SimpleBlog.Converter.Posts.markdown_to_html(input)
       assert expected_output == html
     end
   end

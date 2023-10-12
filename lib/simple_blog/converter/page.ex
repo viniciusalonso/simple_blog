@@ -1,4 +1,4 @@
-defmodule SimpleBlog.Renderer do
+defmodule SimpleBlog.Converter.Page do
   def exx_to_html({:ok, body}, posts_html) do
     quoted = EEx.compile_string(body)
 

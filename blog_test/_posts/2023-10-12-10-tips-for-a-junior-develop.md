@@ -1,0 +1,1 @@
+## 10 tips for a junior develop
