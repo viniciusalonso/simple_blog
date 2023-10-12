@@ -9,36 +9,27 @@ defmodule Mix.Tasks.SimpleBlog.Post.NewTest do
   $ mix simple_blog.post.new "My first blog post"
   """
 
-  @error_instructions """
-  There is a directory missing, please run the following command:
-
-  $ mix simple_blog.new .
-  """
-
   describe "run" do
-    setup do
-      on_exit(fn -> File.rm_rf("blog") end)
-    end
-
     test "returns instructions for no arguments" do
-      Mix.Tasks.SimpleBlog.New.run(["."])
       message = capture_io(fn -> Mix.Tasks.SimpleBlog.Post.New.run([]) end)
 
       assert message == "#{@instructions}\n"
     end
 
     test "show success message for created blog post" do
-      Mix.Tasks.SimpleBlog.New.run(["."])
-      Mix.Tasks.SimpleBlog.Post.New.run(["My First Blog Post"])
+      Mix.Tasks.SimpleBlog.Post.New.run(["My First Blog Post", "blog_test"])
 
       today = Date.utc_today() |> Date.to_string()
 
-      assert File.exists?("blog/_posts/#{today}-my-first-blog-post.md")
+      assert File.exists?("blog_test/_posts/#{today}-my-first-blog-post.md")
+      on_exit(fn -> File.rm("blog_test/_posts/#{today}-my-first-blog-post.md") end)
     end
 
     test "show error message when blog does not exist" do
-      message = capture_io(fn -> Mix.Tasks.SimpleBlog.Post.New.run(["My First Blog Post"]) end)
-      assert message == "#{@error_instructions}\n"
+      message =
+        capture_io(fn -> Mix.Tasks.SimpleBlog.Post.New.run(["My First Blog Post", "invalid"]) end)
+
+      assert message == "The directory invalid was not found\n\n"
     end
   end
 

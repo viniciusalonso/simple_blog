@@ -13,7 +13,7 @@ defmodule SimpleBlog.Post do
   ## Examples
 
     iex> SimpleBlog.Post.generate_filename(%SimpleBlog.Post{ title: "My first blog post", date: ~D[2023-10-04]  })
-    "blog/_posts/2023-10-04-my-first-blog-post.md"
+    "2023-10-04-my-first-blog-post.md"
   """
   def generate_filename(%SimpleBlog.Post{title: title, date: date}) do
     normalized_title =
@@ -21,7 +21,6 @@ defmodule SimpleBlog.Post do
       |> String.downcase()
       |> String.replace(" ", "-", global: true)
 
-    filename = "#{date}-#{normalized_title}.#{@extension}"
-    "blog/_posts/#{filename}"
+    "#{date}-#{normalized_title}.#{@extension}"
   end
 end

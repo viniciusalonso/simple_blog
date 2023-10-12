@@ -1,0 +1,9 @@
+<!doctype html>
+<html>
+    <head></head>
+    <body>
+        <%= for file <- files do %>
+            <%= file %>
+        <% end %>
+    </body>
+</html>

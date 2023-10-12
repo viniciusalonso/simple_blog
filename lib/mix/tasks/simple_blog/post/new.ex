@@ -16,23 +16,24 @@ defmodule Mix.Tasks.SimpleBlog.Post.New do
   @impl Mix.Task
   def run([]), do: Mix.shell().info(usage())
 
-  def run([title]) do
+  def run([title]), do: run([title, "blog"])
+
+  def run([title, root_directory]) do
     today =
       Date.utc_today()
       |> Date.to_string()
 
     filename = SimpleBlog.Post.generate_filename(%SimpleBlog.Post{title: title, date: today})
+    full_file_path = root_directory <> "/_posts/" <> filename
 
-    case File.open(filename, [:write]) do
+    case File.open(full_file_path, [:write]) do
       {:ok, file} ->
         IO.binwrite(file, "## " <> title)
         File.close(file)
 
       {:error, :enoent} ->
         Mix.shell().info("""
-        There is a directory missing, please run the following command:
-
-        $ mix simple_blog.new .
+        The directory #{root_directory} was not found
         """)
     end
   end
