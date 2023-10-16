@@ -10,6 +10,8 @@ defmodule SimpleBlog.Reader.Posts do
     end
   end
 
+  defp pipeline(_posts_directory, []), do: []
+
   defp pipeline(posts_directory, files) do
     files
     |> Enum.map(fn file -> full_path(file, posts_directory) end)
