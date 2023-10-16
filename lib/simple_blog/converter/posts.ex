@@ -1,6 +1,8 @@
 defmodule SimpleBlog.Converter.Posts do
   require Earmark
 
+  def markdown_to_html([]), do: []
+
   def markdown_to_html(files) do
     html =
       for file <- files do
