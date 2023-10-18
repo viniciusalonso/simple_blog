@@ -21,7 +21,10 @@ defmodule SimpleBlog.Reader.PostsTest do
       content = SimpleBlog.Reader.Posts.read_from_dir("blog_test")
 
       assert Enum.sort(content) ==
-               Enum.sort(["## my first job day", "## 10 tips for a junior develop"])
+               Enum.sort([
+                 "<!---\ntitle: my first job day\ndate: 2023-10-18\n--->\n## my first job day",
+                 "<!---\ntitle: 10 tips for a junior develop\ndate: 2023-10-18\n--->\n## 10 tips for a junior develop"
+               ])
     end
 
     test "raises exception when dir not exists" do

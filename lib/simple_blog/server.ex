@@ -9,18 +9,26 @@ defmodule SimpleBlog.Server do
 
   def init(_options) do
     Logger.info("Initializing server ...")
-    # IO.inspect(options)
   end
 
-  def call(%Plug.Conn{request_path: "/", req_headers: [{"accept", accept} | _]} = conn, _opts) do
-    posts_html =
+  def call(%Plug.Conn{request_path: "/"} = conn, _opts) do
+    parse = fn body ->
+      [_, title, date | _] = String.split(body, "\n")
+      t = String.replace(title, "title: ", "")
+      d = String.replace(date, "date: ", "")
+      %SimpleBlog.Post{body: body, title: t, date: d}
+    end
+
+    posts =
       "blog"
       |> SimpleBlog.Reader.Posts.read_from_dir()
       |> SimpleBlog.Converter.Posts.markdown_to_html()
+      |> Enum.map(&parse.(&1))
+      |> IO.inspect()
 
     result =
       File.read("blog/index.html.eex")
-      |> SimpleBlog.Converter.Page.exx_to_html(posts_html)
+      |> SimpleBlog.Converter.Page.exx_to_html(posts)
 
     conn
     |> put_resp_content_type("text/html")

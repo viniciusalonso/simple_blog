@@ -9,8 +9,8 @@ defmodule SimpleBlog.Converter.PageTest do
       <html>
         <head></head>
         <body>
-          <%= for file <- files do %>
-            <%= file %>
+          <%= for post <- posts do %>
+            <%= post %>
           <% end %>
         </body>
       </html>
