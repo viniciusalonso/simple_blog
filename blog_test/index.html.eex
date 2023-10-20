@@ -24,7 +24,7 @@
           </li>
           <%= for post <- posts do %>
             <li>
-              <a class="post-link" href="#">
+              <a class="post-link" href="/posts/?post=<%= post.filename %>">
                 <h2 class="post-title"><%= post.title %></h2>
               </a>
               <div class="post-meta">
@@ -37,4 +37,3 @@
     </main>
   </body>
 </html>
-

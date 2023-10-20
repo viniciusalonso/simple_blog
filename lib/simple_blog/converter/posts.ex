@@ -3,7 +3,7 @@ defmodule SimpleBlog.Converter.Posts do
 
   def markdown_to_html([]), do: []
 
-  def markdown_to_html(files) do
+  def markdown_to_html(files) when is_list(files) do
     html =
       for file <- files do
         {:ok, html_doc, []} = Earmark.as_html(file)
@@ -11,5 +11,10 @@ defmodule SimpleBlog.Converter.Posts do
       end
 
     html
+  end
+
+  def markdown_to_html(file) do
+    {:ok, html_doc, []} = Earmark.as_html(file)
+    html_doc
   end
 end

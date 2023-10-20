@@ -5,7 +5,7 @@ defmodule SimpleBlog.Post do
 
   @extension "md"
 
-  defstruct title: "", tags: [], body: "", date: ""
+  defstruct title: "", tags: [], body: "", date: "", filename: ""
 
   @doc """
   Generate filename for blog post
@@ -22,5 +22,15 @@ defmodule SimpleBlog.Post do
       |> String.replace(" ", "-", global: true)
 
     "#{date}-#{normalized_title}.#{@extension}"
+  end
+
+  def parse(body) do
+    [_, filename_line, title_line, date_line | _] = String.split(body, "\n")
+
+    filename = String.replace(filename_line, "filename: ", "")
+    title = String.replace(title_line, "title: ", "")
+    date = String.replace(date_line, "date: ", "")
+
+    %SimpleBlog.Post{body: body, title: title, date: date, filename: filename}
   end
 end

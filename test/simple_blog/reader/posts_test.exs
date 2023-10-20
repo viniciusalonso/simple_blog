@@ -20,10 +20,14 @@ defmodule SimpleBlog.Reader.PostsTest do
     test "returns only markdown content" do
       content = SimpleBlog.Reader.Posts.read_from_dir("blog_test")
 
+      today =
+        Date.utc_today()
+        |> Date.to_string()
+
       assert Enum.sort(content) ==
                Enum.sort([
-                 "<!---\ntitle: my first job day\ndate: 2023-10-18\n--->\n## my first job day",
-                 "<!---\ntitle: 10 tips for a junior develop\ndate: 2023-10-18\n--->\n## 10 tips for a junior develop"
+                 "<!---\nfilename: #{today}-my-first-job-day.md\ntitle: my first job day\ndate: #{today}\n--->\n",
+                 "<!---\nfilename: #{today}-10-tips-for-a-junior-develop.md\ntitle: 10 tips for a junior develop\ndate: #{today}\n--->\n"
                ])
     end
 
