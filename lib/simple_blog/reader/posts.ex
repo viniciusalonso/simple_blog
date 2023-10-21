@@ -10,14 +10,26 @@ defmodule SimpleBlog.Reader.Posts do
     end
   end
 
+  def read_post(root_directory, post) do
+    posts_directory = root_directory <> "/_posts/"
+    post_path = posts_directory <> post
+
+    case File.read(post_path) do
+      {:ok, file} -> pipeline(posts_directory, file)
+      {:error, :enoent} -> raise("Directory #{posts_directory} not found")
+    end
+  end
+
   defp pipeline(_posts_directory, []), do: []
 
-  defp pipeline(posts_directory, files) do
+  defp pipeline(posts_directory, files) when is_list(files) do
     files
     |> Enum.map(fn file -> full_path(file, posts_directory) end)
     |> Enum.filter(&only_markdown_file/1)
     |> Enum.map(&read_markdown/1)
   end
+
+  defp pipeline(_posts_directory, file), do: file
 
   defp full_path(file, posts_directory) do
     Path.expand(posts_directory <> file)

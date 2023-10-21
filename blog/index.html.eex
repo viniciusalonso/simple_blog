@@ -12,7 +12,7 @@
   <body>
     <main class="container">
       <section class="about">
-        <img src="/images/avatar.png" alt="Vinícius B. Alonso" class="avatar">
+        <img src="/images/avatar.png" alt="avatar" class="avatar">
         <h2>You name</h2>
         <p class="tagline">Developer</p>
       </section>
@@ -21,10 +21,10 @@
           <li>
             <h1 id="posts-label">posts</h1>
           </li>
-          <%= for file <- files do %>
+          <%= for post <- posts do %>
             <li>
-              <a class="post-link" href="#">
-                <h2 class="post-title"><%= file %></h2>
+              <a class="post-link" href="/posts/?post=<%= post.filename %>">
+                <h2 class="post-title"><%= post.title %></h2>
               </a>
               <div class="post-meta">
               </div>

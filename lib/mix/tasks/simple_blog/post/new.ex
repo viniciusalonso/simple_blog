@@ -28,7 +28,11 @@ defmodule Mix.Tasks.SimpleBlog.Post.New do
 
     case File.open(full_file_path, [:write]) do
       {:ok, file} ->
-        IO.binwrite(file, "## " <> title)
+        IO.binwrite(file, "<!---" <> "\n")
+        IO.binwrite(file, "filename: " <> filename <> "\n")
+        IO.binwrite(file, "title: " <> title <> "\n")
+        IO.binwrite(file, "date: " <> today <> "\n")
+        IO.binwrite(file, "--->" <> "\n")
         File.close(file)
 
       {:error, :enoent} ->

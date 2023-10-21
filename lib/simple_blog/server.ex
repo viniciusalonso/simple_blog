@@ -9,18 +9,39 @@ defmodule SimpleBlog.Server do
 
   def init(_options) do
     Logger.info("Initializing server ...")
-    # IO.inspect(options)
   end
 
-  def call(%Plug.Conn{request_path: "/", req_headers: [{"accept", accept} | _]} = conn, _opts) do
-    posts_html =
+  def call(%Plug.Conn{request_path: "/posts/", query_string: query_string} = conn, _opts) do
+    postname =
+      query_string
+      |> String.split("=")
+      |> List.last()
+
+    post =
+      "blog"
+      |> SimpleBlog.Reader.Posts.read_post(postname)
+      |> SimpleBlog.Converter.Posts.markdown_to_html()
+      |> SimpleBlog.Post.parse()
+
+    result =
+      File.read("blog/post.html.eex")
+      |> SimpleBlog.Converter.Page.exx_to_html(post)
+
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, result)
+  end
+
+  def call(%Plug.Conn{request_path: "/"} = conn, _opts) do
+    posts =
       "blog"
       |> SimpleBlog.Reader.Posts.read_from_dir()
       |> SimpleBlog.Converter.Posts.markdown_to_html()
+      |> Enum.map(&SimpleBlog.Post.parse(&1))
 
     result =
       File.read("blog/index.html.eex")
-      |> SimpleBlog.Converter.Page.exx_to_html(posts_html)
+      |> SimpleBlog.Converter.Page.exx_to_html(posts)
 
     conn
     |> put_resp_content_type("text/html")
@@ -28,28 +49,13 @@ defmodule SimpleBlog.Server do
   end
 
   def call(
-        %Plug.Conn{request_path: request_path, req_headers: [{"accept", accept} | _]} = conn,
+        %Plug.Conn{request_path: _request_path, req_headers: [{"accept", accept} | _]} = conn,
         _opts
       ) do
     cond do
       String.contains?(accept, "text/css") -> asset_pipeline(conn, "text/css")
       String.contains?(accept, "image") -> asset_pipeline(conn, "application/png")
     end
-  end
-
-  defp html_pipeline(conn) do
-    posts_html =
-      "blog"
-      |> SimpleBlog.Reader.Posts.read_from_dir()
-      |> SimpleBlog.Converter.Posts.markdown_to_html()
-
-    result =
-      File.read("blog/index.html.eex")
-      |> SimpleBlog.Converter.Page.exx_to_html(posts_html)
-
-    conn
-    |> put_resp_content_type("text/html")
-    |> send_resp(200, result)
   end
 
   defp asset_pipeline(%Plug.Conn{request_path: request_path} = conn, content_type) do
