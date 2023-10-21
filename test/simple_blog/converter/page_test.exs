@@ -3,7 +3,7 @@ defmodule SimpleBlog.Converter.PageTest do
   doctest SimpleBlog.Converter.Page
 
   describe "exx_to_html" do
-    test "transform exx in html" do
+    test "transform exx list in html" do
       exx = """
       <!doctype html>
       <html>
@@ -28,6 +28,33 @@ defmodule SimpleBlog.Converter.PageTest do
         <body>
           <h1> My first blog post</h1>
           <h1> 5 common mistaskes in tech interviews</h1>
+        </body>
+      </html>
+      """
+
+      html = SimpleBlog.Converter.Page.exx_to_html({:ok, exx}, posts_html)
+      assert normalize(output) == normalize(html)
+    end
+
+    test "transform exx in html" do
+      exx = """
+      <!doctype html>
+      <html>
+        <head></head>
+        <body>
+          <%= post %>
+        </body>
+      </html>
+      """
+
+      posts_html = "<h1> My first blog post</h1>"
+
+      output = """
+      <!doctype html>
+      <html>
+        <head></head>
+        <body>
+          <h1> My first blog post</h1>
         </body>
       </html>
       """
