@@ -33,4 +33,15 @@ defmodule SimpleBlog.Post do
 
     %SimpleBlog.Post{body: body, title: title, date: date, filename: filename}
   end
+
+  def generate_html_dir(%SimpleBlog.Post{date: date}, base_dir) do
+    [year, month, day] = String.split(date, "-")
+    base_dir <> "/" <> year <> "/" <> month <> "/" <> day <> "/"
+  end
+
+  def generate_html_filename(%SimpleBlog.Post{title: title}) do
+    title
+    |> String.replace(" ", "-")
+    |> Kernel.<>(".html")
+  end
 end
