@@ -1,3 +1,4 @@
+[![Latest Version](https://img.shields.io/hexpm/v/simple_blog?color=b5a3be&label=Latest+version)](https://hexdocs.pm/simple_blog)
 # Simple Blog
 
   
