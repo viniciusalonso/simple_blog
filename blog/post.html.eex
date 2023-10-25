@@ -23,7 +23,7 @@
     <section class="content">
       <div class="post-container">
         <a href="/">Back</a>
-        <a class="post-link" href="/posts/?post=<%= post.filename %>">
+        <a class="post-link" href="#">
           <h2 class="post-title"><%= post.title %></h2>
         </a>
         <div class="post-meta">
