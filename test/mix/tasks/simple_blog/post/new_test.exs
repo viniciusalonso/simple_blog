@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.SimpleBlog.Post.NewTest do
   use ExUnit.Case
   import ExUnit.CaptureIO
-  doctest Mix.Tasks.SimpleBlog.Post.New
+  # doctest Mix.Tasks.SimpleBlog.Post.New
 
   @instructions """
   To generate a new blog post you should pass a title as string:
@@ -17,6 +17,18 @@ defmodule Mix.Tasks.SimpleBlog.Post.NewTest do
     end
 
     test "show success message for created blog post" do
+      message =
+        capture_io(fn ->
+          Mix.Tasks.SimpleBlog.Post.New.run(["My First Blog Post", "blog_test"])
+        end)
+
+      today = Date.utc_today() |> Date.to_string()
+
+      assert message == "Blog post created at blog_test/_posts/#{today}-my-first-blog-post.md\n\n"
+      on_exit(fn -> File.rm("blog_test/_posts/#{today}-my-first-blog-post.md") end)
+    end
+
+    test "creates a new markdown file for blog post" do
       Mix.Tasks.SimpleBlog.Post.New.run(["My First Blog Post", "blog_test"])
 
       today = Date.utc_today() |> Date.to_string()

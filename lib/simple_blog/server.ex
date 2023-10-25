@@ -7,10 +7,20 @@ defmodule SimpleBlog.Server do
   require Logger
   require Earmark
 
+  @moduledoc """
+  Module responsible for handle HTTP requests
+  """
+
+  @doc """
+  Initializes server passing initial params
+  """
   def init(_options) do
     Logger.info("Initializing server ...")
   end
 
+  @doc """
+  Handle HTTP requests.
+  """
   def call(%Plug.Conn{request_path: "/posts/", query_string: query_string} = conn, _opts) do
     postname =
       query_string

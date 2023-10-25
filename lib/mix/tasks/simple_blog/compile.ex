@@ -3,9 +3,16 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
   require Logger
 
   @moduledoc """
-  Module responsible for transpile markdown into html
+  Command responsible for transpile markdown into html
   """
 
+  @doc """
+  Generates a static blog at output folder
+
+  ## Examples
+
+      iex> Mix.Tasks.SimpleBlog.Compile.run([])
+  """
   @impl Mix.Task
   def run([]) do
     posts =
