@@ -7,7 +7,18 @@ defmodule SimpleBlog.MixProject do
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: "A blog engine to generate static blogs from markdown",
+      package: package()
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["Apache-2.0"],
+      links: %{
+        "GitHub" => "https://github.com/viniciusalonso/simple_blog"
+      }
     ]
   end
 
@@ -22,7 +33,8 @@ defmodule SimpleBlog.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.0"},
-      {:earmark, "~> 1.4"}
+      {:earmark, "~> 1.4"},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
