@@ -8,31 +8,13 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
 
   @impl Mix.Task
   def run([]) do
-    "blog"
-    |> FlatFiles.list_all()
-    |> Enum.map(&parse_files/1)
-
-    File.cp_r("blog/css", "output/css")
-    File.cp_r("blog/images", "output/images")
-
-    write_html_posts()
-  end
-
-  defp parse_files(file) do
-    cond do
-      String.contains?(file, "index.html.eex") -> convert_to_html(file)
-      true -> IO.inspect(file)
-    end
-  end
-
-  defp convert_to_html(_file) do
     posts =
       "blog"
       |> SimpleBlog.Reader.Posts.read_from_dir()
       |> SimpleBlog.Converter.Posts.markdown_to_html()
       |> Enum.map(&SimpleBlog.Post.parse(&1))
 
-    result =
+    index_html =
       File.read("blog/index.html.eex")
       |> SimpleBlog.Converter.Page.exx_to_html(posts)
       |> rewrite_stylesheets()
@@ -41,11 +23,16 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     File.mkdir("output")
     {:ok, file} = File.open("output/index.html", [:write])
 
-    result
+    index_html
     |> String.split("\n")
     |> Enum.each(fn line -> IO.binwrite(file, rewrite_post_links(line) <> "\n") end)
 
     File.close(file)
+
+    File.cp_r("blog/css", "output/css")
+    File.cp_r("blog/images", "output/images")
+
+    write_html_posts(posts)
   end
 
   defp rewrite_stylesheets(html) do
@@ -96,6 +83,14 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     )
   end
 
+  defp rewrite_back_link_post(html) do
+    html
+    |> String.replace(
+      ~s(<a href="/">Back</a>),
+      ~s(<a href="../../../../index.html">Back</a>)
+    )
+  end
+
   defp rewrite_post_links(line) do
     if String.contains?(line, "post-link") do
       href = String.split(line, "?post=") |> List.last() |> String.split(".md") |> List.first()
@@ -109,13 +104,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     end
   end
 
-  defp write_html_posts() do
-    posts =
-      "blog"
-      |> SimpleBlog.Reader.Posts.read_from_dir()
-      |> SimpleBlog.Converter.Posts.markdown_to_html()
-      |> Enum.map(&SimpleBlog.Post.parse(&1))
-
+  defp write_html_posts(posts) do
     posts
     |> Enum.map(&create_folders/1)
     |> IO.inspect()
@@ -146,6 +135,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
       |> SimpleBlog.Converter.Page.exx_to_html(post)
       |> rewrite_stylesheets_post()
       |> rewrite_images_post()
+      |> rewrite_back_link_post()
 
     {:ok, file} = File.open(dir <> filename, [:write])
     IO.binwrite(file, result)
