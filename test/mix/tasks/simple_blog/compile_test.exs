@@ -12,7 +12,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
     end
 
     test "converts posts to html" do
-      Mix.Tasks.SimpleBlog.Post.New.run(["My First Blog Post", "blog_test"])
+      Mix.Tasks.SimpleBlog.Post.run(["My First Blog Post", "blog_test"])
       Mix.Tasks.SimpleBlog.Compile.run(["blog_test", "output_test"])
 
       today = Date.utc_today() |> Date.to_string()

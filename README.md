@@ -1,7 +1,7 @@
 [![Latest Version](https://img.shields.io/hexpm/v/simple_blog?color=b5a3be&label=Latest+version)](https://hexdocs.pm/simple_blog)
+
 # Simple Blog
 
-  
 
 A blog engine written in elixir to generate static blogs from markdown.
 
@@ -39,7 +39,7 @@ $ mix deps.get
 ### Generate new blog post
 
 ```console
-$ mix simple_blog.post.new "10 tips for new developers"
+$ mix simple_blog.post "10 tips for new developers"
 ```
 
 The file will be created at `blog/_posts/yyyy-mm-dd-10-tips-for-new-developers.md`.
@@ -50,7 +50,7 @@ The local http server is designed to local development of your blog. To start it
 
 ```console
 $ mix clean
-$ mix simple_blog.server.start
+$ mix simple_blog.server
 ```
 
 The server will be running at `http://localhost:4000`.

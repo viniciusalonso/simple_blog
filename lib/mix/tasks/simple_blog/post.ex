@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.SimpleBlog.Post.New do
+defmodule Mix.Tasks.SimpleBlog.Post do
   use Mix.Task
 
   @moduledoc """
@@ -10,7 +10,7 @@ defmodule Mix.Tasks.SimpleBlog.Post.New do
 
   ## Examples
 
-      iex> Mix.Tasks.SimpleBlog.Post.New.run(["My first blog post"])
+      iex> Mix.Tasks.SimpleBlog.Post.run(["My first blog post"])
       "Blog post created at blog_test/_posts/yyyy-mm-dd-my-first-blog-post.md"
   """
   @impl Mix.Task

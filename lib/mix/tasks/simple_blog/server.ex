@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.SimpleBlog.Server.Start do
+defmodule Mix.Tasks.SimpleBlog.Server do
   use Mix.Task
   require Logger
 
@@ -11,7 +11,7 @@ defmodule Mix.Tasks.SimpleBlog.Server.Start do
 
   ## Examples
 
-      iex> Mix.Tasks.SimpleBlog.Server.Start.run([])
+      iex> Mix.Tasks.SimpleBlog.Server.run([])
       "Server running on localhost:4000"
   """
   @impl Mix.Task

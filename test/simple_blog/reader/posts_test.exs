@@ -2,8 +2,8 @@ defmodule SimpleBlog.Reader.PostsTest do
   use ExUnit.Case
 
   setup do
-    Mix.Tasks.SimpleBlog.Post.New.run(["my first job day", "blog_test"])
-    Mix.Tasks.SimpleBlog.Post.New.run(["10 tips for a junior develop", "blog_test"])
+    Mix.Tasks.SimpleBlog.Post.run(["my first job day", "blog_test"])
+    Mix.Tasks.SimpleBlog.Post.run(["10 tips for a junior develop", "blog_test"])
 
     on_exit(fn ->
       {:ok, files} = File.ls("blog_test/_posts/")
