@@ -70,6 +70,7 @@ defmodule SimpleBlog.Post do
   def generate_html_filename(%SimpleBlog.Post{title: title}) do
     title
     |> String.replace(" ", "-")
+    |> String.downcase()
     |> Kernel.<>(".html")
   end
 end
