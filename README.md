@@ -15,7 +15,7 @@ def deps do
 
 [
 
-{:simple_blog, "~> 0.1.0"}
+{:simple_blog, "~> 0.2.0"}
 
 ]
 
