@@ -1,6 +1,16 @@
 defmodule SimpleBlog.Reader.Posts do
-  require Logger
+  @moduledoc """
+  Module responsible for read blog posts
+  """
 
+  @doc """
+  Reads content from markdown files located in _posts
+
+  ## Examples
+
+      iex> SimpleBlog.Reader.Posts.read_from_dir("blog")
+      ["## post title 1", "## post title 2"]
+  """
   def read_from_dir(root_directory) do
     posts_directory = root_directory <> "/_posts/"
 
@@ -10,6 +20,14 @@ defmodule SimpleBlog.Reader.Posts do
     end
   end
 
+  @doc """
+  Reads content from markdown file for specific post
+
+  ## Examples
+
+      iex> SimpleBlog.Reader.Posts.read_post("blog", "2023-10-25-metaprogramming-in-ruby.md")
+      "### Metaprogramming in ruby"
+  """
   def read_post(root_directory, post) do
     posts_directory = root_directory <> "/_posts/"
     post_path = posts_directory <> post

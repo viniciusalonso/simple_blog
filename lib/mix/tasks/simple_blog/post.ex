@@ -1,17 +1,17 @@
-defmodule Mix.Tasks.SimpleBlog.Post.New do
+defmodule Mix.Tasks.SimpleBlog.Post do
   use Mix.Task
 
   @moduledoc """
-  Module responsible for generate a new blog post.
+  Command responsible for generate a new blog post.
   """
 
   @doc """
-  It generates a new blog post
+  Generates a new blog post
 
   ## Examples
 
-    # iex> Mix.Tasks.SimpleBlog.Post.New.run(["My first blog post"])
-    # :ok
+      iex> Mix.Tasks.SimpleBlog.Post.run(["My first blog post"])
+      "Blog post created at blog_test/_posts/yyyy-mm-dd-my-first-blog-post.md"
   """
   @impl Mix.Task
   def run([]), do: Mix.shell().info(usage())
@@ -35,6 +35,10 @@ defmodule Mix.Tasks.SimpleBlog.Post.New do
         IO.binwrite(file, "--->" <> "\n")
         File.close(file)
 
+        Mix.shell().info("""
+        Blog post created at #{full_file_path}
+        """)
+
       {:error, :enoent} ->
         Mix.shell().info("""
         The directory #{root_directory} was not found
@@ -42,6 +46,9 @@ defmodule Mix.Tasks.SimpleBlog.Post.New do
     end
   end
 
+  @doc """
+  Returns instructions about command usage
+  """
   def usage() do
     """
     To generate a new blog post you should pass a title as string:

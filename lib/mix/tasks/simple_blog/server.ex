@@ -1,11 +1,19 @@
-defmodule Mix.Tasks.SimpleBlog.Server.Start do
+defmodule Mix.Tasks.SimpleBlog.Server do
   use Mix.Task
   require Logger
 
   @moduledoc """
-  Module responsible for a simple http server to allow local working on blog
+  Command responsible for a simple http server to allow local working on blog
   """
 
+  @doc """
+  Starts a local HTTP server in the port 4000
+
+  ## Examples
+
+      iex> Mix.Tasks.SimpleBlog.Server.run([])
+      "Server running on localhost:4000"
+  """
   @impl Mix.Task
   def run([]) do
     webserver = [

@@ -3,25 +3,34 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
   require Logger
 
   @moduledoc """
-  Module responsible for transpile markdown into html
+  Command responsible for transpile markdown into html
   """
 
+  @doc """
+  Generates a static blog at output folder
+
+  ## Examples
+
+      iex> Mix.Tasks.SimpleBlog.Compile.run([])
+  """
   @impl Mix.Task
-  def run([]) do
+  def run([]), do: run(["blog", "output"])
+
+  def run([root_directory, output_directory]) do
     posts =
-      "blog"
+      root_directory
       |> SimpleBlog.Reader.Posts.read_from_dir()
       |> SimpleBlog.Converter.Posts.markdown_to_html()
       |> Enum.map(&SimpleBlog.Post.parse(&1))
 
     index_html =
-      File.read("blog/index.html.eex")
+      File.read(root_directory <> "/index.html.eex")
       |> SimpleBlog.Converter.Page.exx_to_html(posts)
       |> rewrite_stylesheets()
       |> rewrite_images()
 
-    File.mkdir("output")
-    {:ok, file} = File.open("output/index.html", [:write])
+    File.mkdir(output_directory)
+    {:ok, file} = File.open(output_directory <> "/index.html", [:write])
 
     index_html
     |> String.split("\n")
@@ -29,10 +38,10 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
 
     File.close(file)
 
-    File.cp_r("blog/css", "output/css")
-    File.cp_r("blog/images", "output/images")
+    File.cp_r(root_directory <> "/css", output_directory <> "/css")
+    File.cp_r(root_directory <> "/images", output_directory <> "/images")
 
-    write_html_posts(posts)
+    write_html_posts(root_directory, output_directory, posts)
   end
 
   defp rewrite_stylesheets(html) do
@@ -104,34 +113,33 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     end
   end
 
-  defp write_html_posts(posts) do
+  defp write_html_posts(root_directory, output_directory, posts) do
     posts
-    |> Enum.map(&create_folders/1)
-    |> IO.inspect()
+    |> Enum.map(&create_folders(&1, output_directory))
 
     posts
-    |> Enum.map(&create_posts_html/1)
+    |> Enum.map(&create_posts_html(&1, root_directory, output_directory))
   end
 
-  defp create_folders(post) do
+  defp create_folders(post, output_directory) do
     post
-    |> SimpleBlog.Post.generate_html_dir("output/posts/")
+    |> SimpleBlog.Post.generate_html_dir(output_directory <> "/posts/")
     |> File.mkdir_p()
   end
 
-  def create_posts_html(post) do
-    dir = SimpleBlog.Post.generate_html_dir(post, "output/posts/")
+  def create_posts_html(post, root_directory, output_directory) do
+    dir = SimpleBlog.Post.generate_html_dir(post, output_directory <> "/posts/")
     filename = SimpleBlog.Post.generate_html_filename(post)
     postname = SimpleBlog.Post.generate_filename(post)
 
     post =
-      "blog"
+      root_directory
       |> SimpleBlog.Reader.Posts.read_post(postname)
       |> SimpleBlog.Converter.Posts.markdown_to_html()
       |> SimpleBlog.Post.parse()
 
     result =
-      File.read("blog/post.html.eex")
+      File.read(root_directory <> "/post.html.eex")
       |> SimpleBlog.Converter.Page.exx_to_html(post)
       |> rewrite_stylesheets_post()
       |> rewrite_images_post()
