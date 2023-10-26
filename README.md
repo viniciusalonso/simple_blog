@@ -64,3 +64,7 @@ $ mix simple_blog.compile
 ```
 
 The command will generate a directory called `output`.
+
+## Default theme
+
+The default theme is based on https://github.com/samarsault/plainwhite-jekyll.
