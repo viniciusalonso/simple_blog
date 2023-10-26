@@ -116,7 +116,6 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
   defp write_html_posts(root_directory, output_directory, posts) do
     posts
     |> Enum.map(&create_folders(&1, output_directory))
-    |> IO.inspect()
 
     posts
     |> Enum.map(&create_posts_html(&1, root_directory, output_directory))
