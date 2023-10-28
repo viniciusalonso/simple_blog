@@ -1,6 +1,7 @@
 defmodule Mix.Tasks.SimpleBlog.Compile do
   use Mix.Task
   require Logger
+  require Floki
 
   @moduledoc """
   Command responsible for transpile markdown into html
@@ -26,16 +27,13 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     index_html =
       File.read(root_directory <> "/index.html.eex")
       |> SimpleBlog.Converter.Page.exx_to_html(posts)
-      |> rewrite_stylesheets()
-      |> rewrite_images()
+      |> rewrite_stylesheets("./")
+      |> rewrite_images("./")
+      |> rewrite_post_links()
 
     File.mkdir(output_directory)
     {:ok, file} = File.open(output_directory <> "/index.html", [:write])
-
-    index_html
-    |> String.split("\n")
-    |> Enum.each(fn line -> IO.binwrite(file, rewrite_post_links(line) <> "\n") end)
-
+    IO.binwrite(file, index_html)
     File.close(file)
 
     File.cp_r(root_directory <> "/css", output_directory <> "/css")
@@ -44,73 +42,61 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     write_html_posts(root_directory, output_directory, posts)
   end
 
-  defp rewrite_stylesheets(html) do
-    html
-    |> String.replace(
-      ~s(<link rel="stylesheet" href="/css/_solarized-light.css">),
-      ~s(<link rel="stylesheet" href="./css/_solarized-light.css">)
-    )
-    |> String.replace(
-      ~s(<link rel="stylesheet" href="/css/plain.css">),
-      ~s(<link rel="stylesheet" href="./css/plain.css">)
-    )
-    |> String.replace(
-      ~s(<link rel="stylesheet" href="/css/style.css">),
-      ~s(<link rel="stylesheet" href="./css/style.css">)
-    )
+  defp rewrite_stylesheets(html, path) do
+    {:ok, document} = Floki.parse_document(html)
+
+    Floki.find_and_update(document, "link", fn
+      {"link", [{"href", href}]} ->
+        {"link", [{"href", String.replace(href, "/", path)}]}
+
+      other ->
+        other
+    end)
+    |> Floki.raw_html()
   end
 
-  defp rewrite_stylesheets_post(html) do
-    html
-    |> String.replace(
-      ~s(<link rel="stylesheet" href="/css/_solarized-light.css">),
-      ~s(<link rel="stylesheet" href="../../../../css/_solarized-light.css">)
-    )
-    |> String.replace(
-      ~s(<link rel="stylesheet" href="/css/plain.css">),
-      ~s(<link rel="stylesheet" href="../../../../css/plain.css">)
-    )
-    |> String.replace(
-      ~s(<link rel="stylesheet" href="/css/style.css">),
-      ~s(<link rel="stylesheet" href="../../../../css/style.css">)
-    )
+  defp rewrite_images(html, path) do
+    {:ok, document} = Floki.parse_document(html)
+
+    Floki.find_and_update(document, "img", fn
+      {"img", [{"src", src}]} ->
+        {"img", [{"src", String.replace(src, "/", path)}]}
+
+      other ->
+        other
+    end)
+    |> Floki.raw_html()
   end
 
-  defp rewrite_images(html) do
-    html
-    |> String.replace(
-      ~s(<img src="/images/avatar.png" alt="avatar" class="avatar">),
-      ~s(<img src="./images/avatar.png" alt="avatar" class="avatar">)
-    )
+  defp rewrite_back_link(html) do
+    {:ok, document} = Floki.parse_document(html)
+
+    Floki.find_and_update(document, "a.back-link", fn
+      {"a", [{"href", "/"}, {"class", "back-link"}]} ->
+        {"a", [{"href", "../../../../index.html"}]}
+
+      other ->
+        other
+    end)
+    |> Floki.raw_html()
   end
 
-  defp rewrite_images_post(html) do
-    html
-    |> String.replace(
-      ~s(<img src="/images/avatar.png" alt="avatar" class="avatar">),
-      ~s(<img src="../../../../images/avatar.png" alt="avatar" class="avatar">)
-    )
-  end
+  defp rewrite_post_links(html) do
+    {:ok, document} = Floki.parse_document(html)
 
-  defp rewrite_back_link_post(html) do
-    html
-    |> String.replace(
-      ~s(<a href="/">Back</a>),
-      ~s(<a href="../../../../index.html">Back</a>)
-    )
-  end
+    Floki.find_and_update(document, "a.post-link", fn
+      {"a", [{"class", _}, {"href", href}]} ->
+        href = String.split(href, "?post=") |> List.last() |> String.split(".md") |> List.first()
 
-  defp rewrite_post_links(line) do
-    if String.contains?(line, "post-link") do
-      href = String.split(line, "?post=") |> List.last() |> String.split(".md") |> List.first()
+        <<year::binary-size(4), _, month::binary-size(2), _, day::binary-size(2), _,
+          filename::binary>> = href
 
-      <<year::binary-size(4), _, month::binary-size(2), _, day::binary-size(2), _,
-        filename::binary>> = href
+        {"a", [{"href", "posts/#{year}/#{month}/#{day}/#{filename}.html"}]}
 
-      ~s(<a class="post-link" href="posts/#{year}/#{month}/#{day}/#{filename}.html">)
-    else
-      line
-    end
+      other ->
+        other
+    end)
+    |> Floki.raw_html()
   end
 
   defp write_html_posts(root_directory, output_directory, posts) do
@@ -141,9 +127,9 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     result =
       File.read(root_directory <> "/post.html.eex")
       |> SimpleBlog.Converter.Page.exx_to_html(post)
-      |> rewrite_stylesheets_post()
-      |> rewrite_images_post()
-      |> rewrite_back_link_post()
+      |> rewrite_stylesheets("../../../../")
+      |> rewrite_images("../../../../")
+      |> rewrite_back_link()
 
     {:ok, file} = File.open(dir <> filename, [:write])
     IO.binwrite(file, result)
