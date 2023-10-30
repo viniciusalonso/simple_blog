@@ -26,3 +26,6 @@ simple_blog-*.tar
 /tmp/
 
 output
+
+# Ignore user posts
+blog/_posts/
