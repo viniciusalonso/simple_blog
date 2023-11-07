@@ -2,9 +2,9 @@ defmodule SimpleBlog.Converter.PageTest do
   use ExUnit.Case
   doctest SimpleBlog.Converter.Page
 
-  describe "exx_to_html" do
-    test "transform exx list in html" do
-      exx = """
+  describe "eex_to_html" do
+    test "transform eex list in html" do
+      eex = """
       <!doctype html>
       <html>
         <head></head>
@@ -32,12 +32,12 @@ defmodule SimpleBlog.Converter.PageTest do
       </html>
       """
 
-      html = SimpleBlog.Converter.Page.exx_to_html({:ok, exx}, posts_html)
+      html = SimpleBlog.Converter.Page.eex_to_html({:ok, eex}, posts_html)
       assert normalize(output) == normalize(html)
     end
 
-    test "transform exx in html" do
-      exx = """
+    test "transform eex in html" do
+      eex = """
       <!doctype html>
       <html>
         <head></head>
@@ -59,7 +59,7 @@ defmodule SimpleBlog.Converter.PageTest do
       </html>
       """
 
-      html = SimpleBlog.Converter.Page.exx_to_html({:ok, exx}, posts_html)
+      html = SimpleBlog.Converter.Page.eex_to_html({:ok, eex}, posts_html)
       assert normalize(output) == normalize(html)
     end
   end
