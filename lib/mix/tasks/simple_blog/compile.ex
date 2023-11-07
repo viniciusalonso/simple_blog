@@ -26,7 +26,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
 
     index_html =
       File.read(root_directory <> "/index.html.eex")
-      |> SimpleBlog.Converter.Page.exx_to_html(posts)
+      |> SimpleBlog.Converter.Page.eex_to_html(posts)
       |> rewrite_stylesheets("./")
       |> rewrite_images("./")
       |> rewrite_post_links()
@@ -126,7 +126,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
 
     result =
       File.read(root_directory <> "/post.html.eex")
-      |> SimpleBlog.Converter.Page.exx_to_html(post)
+      |> SimpleBlog.Converter.Page.eex_to_html(post)
       |> rewrite_stylesheets("../../../../")
       |> rewrite_images("../../../../")
       |> rewrite_back_link()
