@@ -1,6 +1,5 @@
 defmodule SimpleBlog.RewriteHTML.Stylesheet do
   require Floki
-  require IEx
 
   def rewrite(html, path) do
     {:ok, document} = Floki.parse_document(html)
@@ -13,11 +12,6 @@ defmodule SimpleBlog.RewriteHTML.Stylesheet do
         else
           {"link", [{"rel", "stylesheet"}, {"href", href}]}
         end
-
-      other ->
-        # IEx.pry
-        IO.puts(other)
-        other
     end)
     |> Floki.raw_html()
   end
