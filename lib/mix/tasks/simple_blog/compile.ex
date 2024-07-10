@@ -2,6 +2,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
   use Mix.Task
   require Logger
   require Floki
+  require SimpleBlog.RewriteHTML.{Stylesheet, Image, PostsLink}
 
   @moduledoc """
   Command responsible for transpile markdown into html
@@ -27,9 +28,9 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     index_html =
       File.read(root_directory <> "/index.html.eex")
       |> SimpleBlog.Converter.Page.eex_to_html(posts)
-      |> rewrite_stylesheets("./")
-      |> rewrite_images("./")
-      |> rewrite_post_links()
+      |> SimpleBlog.RewriteHTML.Stylesheet.rewrite("./")
+      |> SimpleBlog.RewriteHTML.Image.rewrite("./")
+      |> SimpleBlog.RewriteHTML.PostsLink.rewrite()
 
     File.mkdir(output_directory)
     {:ok, file} = File.open(output_directory <> "/index.html", [:write])
@@ -40,63 +41,6 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     File.cp_r(root_directory <> "/images", output_directory <> "/images")
 
     write_html_posts(root_directory, output_directory, posts)
-  end
-
-  defp rewrite_stylesheets(html, path) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "link", fn
-      {"link", [{"href", href}]} ->
-        {"link", [{"href", String.replace(href, "/", path)}]}
-
-      other ->
-        other
-    end)
-    |> Floki.raw_html()
-  end
-
-  defp rewrite_images(html, path) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "img", fn
-      {"img", [{"src", src}]} ->
-        {"img", [{"src", String.replace(src, "/", path)}]}
-
-      other ->
-        other
-    end)
-    |> Floki.raw_html()
-  end
-
-  defp rewrite_back_link(html) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "a.back-link", fn
-      {"a", [{"href", "/"}, {"class", "back-link"}]} ->
-        {"a", [{"href", "../../../../index.html"}]}
-
-      other ->
-        other
-    end)
-    |> Floki.raw_html()
-  end
-
-  defp rewrite_post_links(html) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "a.post-link", fn
-      {"a", [{"class", _}, {"href", href}]} ->
-        href = String.split(href, "?post=") |> List.last() |> String.split(".md") |> List.first()
-
-        <<year::binary-size(4), _, month::binary-size(2), _, day::binary-size(2), _,
-          filename::binary>> = href
-
-        {"a", [{"href", "posts/#{year}/#{month}/#{day}/#{filename}.html"}]}
-
-      other ->
-        other
-    end)
-    |> Floki.raw_html()
   end
 
   defp write_html_posts(root_directory, output_directory, posts) do
@@ -127,9 +71,9 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     result =
       File.read(root_directory <> "/post.html.eex")
       |> SimpleBlog.Converter.Page.eex_to_html(post)
-      |> rewrite_stylesheets("../../../../")
-      |> rewrite_images("../../../../")
-      |> rewrite_back_link()
+      |> SimpleBlog.RewriteHTML.Stylesheet.rewrite("../../../../")
+      |> SimpleBlog.RewriteHTML.Image.rewrite("../../../../")
+      |> SimpleBlog.RewriteHTML.BackLink.rewrite()
 
     {:ok, file} = File.open(dir <> filename, [:write])
     IO.binwrite(file, result)

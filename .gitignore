@@ -29,3 +29,5 @@ output
 
 # Ignore user posts
 blog/_posts/
+
+.DS_Store
