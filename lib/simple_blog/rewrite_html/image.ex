@@ -5,8 +5,9 @@ defmodule SimpleBlog.RewriteHTML.Image do
     {:ok, document} = Floki.parse_document(html)
 
     Floki.find_and_update(document, "img", fn
-      {"img", [{"src", src}, {"alt", alt}, {"class", _class}]} ->
-        {"img", [{"src", String.replace(src, "/", path, global: false)}, {"alt", alt}]}
+      {"img", [{"src", src}, {"alt", alt}, {"class", class}]} ->
+        {"img",
+         [{"src", String.replace(src, "/", path, global: false)}, {"alt", alt}, {"class", class}]}
 
       {"img", [{"src", src}, {"alt", alt}, {"class", _class}, {"title", _t}]} ->
         {"img", [{"src", String.replace(src, "/", path, global: false)}, {"alt", alt}]}
