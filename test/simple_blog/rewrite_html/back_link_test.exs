@@ -6,7 +6,7 @@ defmodule SimpleBlog.RewriteHTML.BackLinkTest do
     test "rewrites link href attribute" do
       link = ~s(<a href="/" class="back-link">Back</a>)
       result = SimpleBlog.RewriteHTML.BackLink.rewrite(link)
-      assert result == ~s(<a href="../../../../index.html">Back</a>)
+      assert result == ~s(<a href="../../../../index.html" class="back-link">Back</a>)
     end
   end
 end

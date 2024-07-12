@@ -4,12 +4,14 @@ defmodule SimpleBlog.RewriteHTML.ImageTest do
 
   describe "rewrite" do
     test "rewrites image src attribute" do
-      image = ~s(<img src="/images/img_girl.jpg" alt="Girl in a jacket" class="img-circle" />)
+      image =
+        ~s(<img src="/images/img_girl.jpg" alt="Girl in a jacket" title="Title" class="img-circle"/>)
+
       path = "./"
       result = SimpleBlog.RewriteHTML.Image.rewrite(image, path)
 
       assert result ==
-               ~s(<img src="./images/img_girl.jpg" alt="Girl in a jacket" class="img-circle"/>)
+               ~s(<img src="./images/img_girl.jpg" alt="Girl in a jacket" title="Title" class="img-circle"/>)
     end
   end
 end
