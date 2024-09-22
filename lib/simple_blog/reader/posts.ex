@@ -11,6 +11,7 @@ defmodule SimpleBlog.Reader.Posts do
       iex> SimpleBlog.Reader.Posts.read_from_dir("blog")
       ["## post title 1", "## post title 2"]
   """
+  $ string() -> list()
   def read_from_dir(root_directory) do
     posts_directory = root_directory <> "/_posts/"
 
@@ -28,6 +29,7 @@ defmodule SimpleBlog.Reader.Posts do
       iex> SimpleBlog.Reader.Posts.read_post("blog", "2023-10-25-metaprogramming-in-ruby.md")
       "### Metaprogramming in ruby"
   """
+  $ (string(), string()) -> string()
   def read_post(root_directory, post) do
     posts_directory = root_directory <> "/_posts/"
     post_path = posts_directory <> post
@@ -40,6 +42,7 @@ defmodule SimpleBlog.Reader.Posts do
 
   defp pipeline(_posts_directory, []), do: []
 
+  $ (string(), list()) -> list()
   defp pipeline(posts_directory, files) when is_list(files) do
     files
     |> Enum.map(fn file -> full_path(file, posts_directory) end)

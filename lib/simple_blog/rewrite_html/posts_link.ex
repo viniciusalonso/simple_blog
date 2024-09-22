@@ -1,6 +1,7 @@
 defmodule SimpleBlog.RewriteHTML.PostsLink do
   require Floki
 
+  $ string() -> string()
   def rewrite(html) do
     {:ok, document} = Floki.parse_document(html)
 
@@ -11,6 +12,7 @@ defmodule SimpleBlog.RewriteHTML.PostsLink do
     |> Floki.raw_html()
   end
 
+  $ string() -> string()
   defp filename(x) do
     href =
       String.split(x, "?post=")
