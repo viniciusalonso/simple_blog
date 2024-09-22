@@ -14,6 +14,18 @@ defmodule SimpleBlog.Server do
   @doc """
   Initializes server passing initial params
   """
+
+  $type opts() ::
+  string()
+  | tuple()
+  | atom()
+  | integer()
+  | float()
+  | [opts()]
+  | %{optional(opts()) => opts()}
+  | MapSet.t()
+
+  $ opts() -> opts()
   def init(_options) do
     Logger.info("Initializing server ...")
   end
@@ -21,6 +33,8 @@ defmodule SimpleBlog.Server do
   @doc """
   Handle HTTP requests.
   """
+  # Verificar se é assim mesmo
+  $ (Plug.Conn.t(), opts()) -> Plug.Conn.t()
   def call(%Plug.Conn{request_path: "/posts/", query_string: query_string} = conn, _opts) do
     postname =
       query_string
@@ -42,6 +56,7 @@ defmodule SimpleBlog.Server do
     |> send_resp(200, result)
   end
 
+  $ (Plug.Conn.t(), opts()) -> Plug.Conn.t()
   def call(%Plug.Conn{request_path: "/"} = conn, _opts) do
     posts =
       "blog"
@@ -58,6 +73,7 @@ defmodule SimpleBlog.Server do
     |> send_resp(200, result)
   end
 
+  $ (Plug.Conn.t(), opts()) -> Plug.Conn.t()
   def call(
         %Plug.Conn{request_path: _request_path, req_headers: [{"accept", accept} | _]} = conn,
         _opts
@@ -68,6 +84,7 @@ defmodule SimpleBlog.Server do
     end
   end
 
+  $ (Plug.Conn.t(), string()) -> Plug.Conn.t()
   defp asset_pipeline(%Plug.Conn{request_path: request_path} = conn, content_type) do
     Logger.info(request_path)
 

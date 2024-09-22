@@ -14,6 +14,7 @@ defmodule SimpleBlog.RewriteHTML.BackLink do
       iex> SimpleBlog.RewriteHTML.BackLink.rewrite(link)
       ~s(<a href="../../../../index.html" class="back-link">Back</a>)
   """
+  $ string() -> string()
   def rewrite(html) do
     {:ok, document} = Floki.parse_document(html)
 

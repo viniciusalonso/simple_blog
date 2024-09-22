@@ -1,6 +1,7 @@
 defmodule SimpleBlog.RewriteHTML.Image do
   require Floki
 
+  $ string() -> string()
   def rewrite(html, path) do
     {:ok, document} = Floki.parse_document(html)
 

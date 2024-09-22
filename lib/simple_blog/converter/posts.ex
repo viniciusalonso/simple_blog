@@ -19,8 +19,10 @@ defmodule SimpleBlog.Converter.Posts do
       iex> SimpleBlog.Converter.Posts.markdown_to_html([])
       []
   """
+  $ list() -> list()
   def markdown_to_html([]), do: []
 
+  $ [files] -> string() when files: string()
   def markdown_to_html(files) when is_list(files) do
     html =
       for file <- files do
@@ -31,6 +33,7 @@ defmodule SimpleBlog.Converter.Posts do
     html
   end
 
+  $ string() -> string()
   def markdown_to_html(file) do
     {:ok, html_doc, []} = Earmark.as_html(file)
     html_doc
