@@ -18,5 +18,14 @@ defmodule SimpleBlog.RewriteHTML.StylesheetTest do
       result = SimpleBlog.RewriteHTML.Stylesheet.rewrite(font, path)
       assert result == font
     end
+
+    test "does not mangle absolute .css URLs from external CDNs" do
+      stylesheet =
+        ~s(<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"/>)
+
+      path = "../../../../"
+      result = SimpleBlog.RewriteHTML.Stylesheet.rewrite(stylesheet, path)
+      assert result == stylesheet
+    end
   end
 end

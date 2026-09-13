@@ -6,7 +6,7 @@ defmodule SimpleBlog.RewriteHTML.Stylesheet do
 
     Floki.find_and_update(document, "link", fn
       {"link", [{"rel", "stylesheet"}, {"href", href}]} ->
-        if String.contains?(href, ".css") do
+        if String.starts_with?(href, "/") do
           {"link",
            [{"rel", "stylesheet"}, {"href", String.replace(href, "/", path, global: false)}]}
         else
