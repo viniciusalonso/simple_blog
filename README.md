@@ -65,6 +65,20 @@ $ mix simple_blog.compile
 
 The command will generate a directory called `output`.
 
+## Syntax highlighting
+
+Code blocks in your posts are automatically highlighted using [Prism.js](https://prismjs.com/), loaded via CDN in the post template. Just use fenced code blocks with the language identifier in your markdown:
+
+````markdown
+```elixir
+defmodule Counter do
+  def increment(n), do: n + 1
+end
+```
+````
+
+Currently, `elixir` and `php` are the supported languages.
+
 ## Default theme
 
 The default theme is based on https://github.com/samarsault/plainwhite-jekyll.
