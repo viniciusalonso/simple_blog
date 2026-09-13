@@ -16,6 +16,8 @@ defmodule Mix.Tasks.SimpleBlog.Server do
   """
   @impl Mix.Task
   def run([]) do
+    Mix.Task.run("app.start")
+
     webserver = [
       {
         Plug.Cowboy,

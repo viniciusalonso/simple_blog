@@ -29,5 +29,19 @@ defmodule SimpleBlog.Converter.PostsTest do
     test "with empty list returns empty one" do
       assert SimpleBlog.Converter.Posts.markdown_to_html([]) == []
     end
+
+    test "adds a language- prefixed class to fenced code blocks for Prism" do
+      input = """
+      ```elixir
+      defmodule Foo do
+      end
+      ```
+      """
+
+      html = SimpleBlog.Converter.Posts.markdown_to_html(input)
+
+      assert html ==
+               "<pre><code class=\"elixir language-elixir\">defmodule Foo do\nend</code></pre>\n"
+    end
   end
 end
