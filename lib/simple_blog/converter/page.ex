@@ -3,6 +3,7 @@ defmodule SimpleBlog.Converter.Page do
   Module responsible for convert pages from eex to html
   """
 
+  $ type parsed() = {{:ok, string()}}
   @doc """
   Convert eex file to html
 
@@ -16,6 +17,7 @@ defmodule SimpleBlog.Converter.Page do
       iex> SimpleBlog.Converter.Page.eex_to_html({:ok, "<%= post.title %>"}, post)
       "post 1"
   """
+  $ (parsed(),[posts]) -> string() when posts: SimpleBlog.Post.t()
   def eex_to_html({:ok, body}, posts) when is_list(posts) do
     quoted = EEx.compile_string(body)
 
@@ -24,6 +26,7 @@ defmodule SimpleBlog.Converter.Page do
     end
   end
 
+  $ (parsed(), SimpleBlog.Post.t()) -> string()
   def eex_to_html({:ok, body}, post) do
     quoted = EEx.compile_string(body)
 
