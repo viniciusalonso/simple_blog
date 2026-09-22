@@ -4,10 +4,13 @@ defmodule SimpleBlog.RewriteHTML.Image do
   def rewrite(html, path) do
     {:ok, document} = Floki.parse_document(html)
 
-    Floki.find_and_update(document, "img", fn element ->
-      {"img", [{"src", src} | attrs]} = element
-      {"img", [{"src", String.replace(src, "/", path, global: false)} | attrs]}
+    Floki.find_and_update(document, "img", fn {"img", attrs} ->
+      {"img", Enum.map(attrs, &rewrite_attr(&1, path))}
     end)
     |> Floki.raw_html()
   end
+
+  defp rewrite_attr({"src", "//" <> _} = attr, _path), do: attr
+  defp rewrite_attr({"src", "/" <> src}, path), do: {"src", path <> src}
+  defp rewrite_attr(attr, _path), do: attr
 end
