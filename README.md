@@ -77,7 +77,29 @@ end
 ```
 ````
 
-Currently, `elixir` and `php` are the supported languages.
+## Images
+
+Put your images inside the `blog/images/` directory (subdirectories are allowed) and reference them with an absolute path starting with `/images/`:
+
+```markdown
+![My avatar](/images/avatar.png)
+```
+
+The same works for `<img>` tags in your posts and templates:
+
+```html
+<img src="/images/avatar.png" alt="My avatar" class="avatar">
+```
+
+When you run `mix simple_blog.compile`, the whole `blog/images/` directory is copied to `output/images/`. Absolute image paths are rewritten to relative ones, so the generated blog works from any location. For example, `/images/avatar.png` becomes `./images/avatar.png` in `index.html` and `../../../../images/avatar.png` in posts.
+
+Only `src` values that start with a single `/` are rewritten. These are left as they are:
+
+- External URLs, such as `https://example.com/photo.jpg`
+- Protocol-relative URLs, such as `//cdn.example.com/photo.jpg`
+- Relative paths, such as `images/avatar.png`
+
+The local server (`mix simple_blog.server`) serves any file under `blog/`. The content type comes from the file extension (`image/png`, `image/jpeg`, `image/svg+xml`, `image/gif`, `image/webp`, …). If a file doesn't exist, the server returns `404 Not found`.
 
 ## Default theme
 

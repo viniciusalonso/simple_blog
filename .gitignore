@@ -30,4 +30,8 @@ output
 # Ignore user posts
 blog/_posts/
 
+# Ignore user images, keeping the default theme avatar
+blog/images/*
+!blog/images/avatar.png
+
 .DS_Store

@@ -58,29 +58,19 @@ defmodule SimpleBlog.Server do
     |> send_resp(200, result)
   end
 
-  def call(
-        %Plug.Conn{request_path: _request_path, req_headers: [{"accept", accept} | _]} = conn,
-        _opts
-      ) do
-    cond do
-      String.contains?(accept, "text/css") -> asset_pipeline(conn, "text/css")
-      String.contains?(accept, "image") -> asset_pipeline(conn, "application/png")
+  def call(%Plug.Conn{} = conn, _opts), do: asset_pipeline(conn)
+
+  defp asset_pipeline(%Plug.Conn{request_path: request_path} = conn) do
+    Logger.info(request_path)
+
+    case File.read("blog" <> request_path) do
+      {:ok, content} ->
+        conn
+        |> put_resp_content_type(MIME.from_path(request_path), nil)
+        |> send_resp(200, content)
+
+      {:error, _reason} ->
+        send_resp(conn, 404, "Not found")
     end
-  end
-
-  defp asset_pipeline(%Plug.Conn{request_path: request_path} = conn, content_type) do
-    Logger.info(request_path)
-
-    content =
-      case File.read("blog" <> request_path) do
-        {:ok, content} -> content
-        {:error, :eisdir} -> request_path
-      end
-
-    Logger.info(request_path)
-
-    conn
-    |> put_resp_content_type(content_type)
-    |> send_resp(200, content)
   end
 end
