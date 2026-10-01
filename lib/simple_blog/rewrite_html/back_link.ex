@@ -1,5 +1,5 @@
 defmodule SimpleBlog.RewriteHTML.BackLink do
-  require Floki
+  import SimpleBlog.RewriteHTML
 
   @moduledoc """
   Module responsible for rewrite back link in post page
@@ -15,12 +15,15 @@ defmodule SimpleBlog.RewriteHTML.BackLink do
       ~s(<a href="../../../../index.html" class="back-link">Back</a>)
   """
   def rewrite(html) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "a.back-link", fn element ->
-      {"a", [{"href", "/"} | attrs]} = element
-      {"a", [{"href", "../../../../index.html"} | attrs]}
+    update_tags(html, "a", fn element ->
+      if has_class?(element, "back-link") do
+        update_attribute(element, "href", fn
+          "/" -> "../../../../index.html"
+          href -> href
+        end)
+      else
+        element
+      end
     end)
-    |> Floki.raw_html()
   end
 end

@@ -1,16 +1,13 @@
 defmodule SimpleBlog.RewriteHTML.Image do
-  require Floki
+  import SimpleBlog.RewriteHTML
 
   def rewrite(html, path) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "img", fn {"img", attrs} ->
-      {"img", Enum.map(attrs, &rewrite_attr(&1, path))}
+    update_tags(html, "img", fn element ->
+      update_attribute(element, "src", &rewrite_src(&1, path))
     end)
-    |> Floki.raw_html()
   end
 
-  defp rewrite_attr({"src", "//" <> _} = attr, _path), do: attr
-  defp rewrite_attr({"src", "/" <> src}, path), do: {"src", path <> src}
-  defp rewrite_attr(attr, _path), do: attr
+  defp rewrite_src("//" <> _ = src, _path), do: src
+  defp rewrite_src("/" <> src, path), do: path <> src
+  defp rewrite_src(src, _path), do: src
 end

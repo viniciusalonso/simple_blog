@@ -7,7 +7,7 @@ defmodule SimpleBlog.RewriteHTML.StylesheetTest do
       stylesheet = ~s(<link rel="stylesheet" href="/css/_solarized-light.css">)
       path = "../"
       result = SimpleBlog.RewriteHTML.Stylesheet.rewrite(stylesheet, path)
-      assert result == ~s(<link rel="stylesheet" href="../css/_solarized-light.css"/>)
+      assert result == ~s(<link rel="stylesheet" href="../css/_solarized-light.css">)
     end
 
     test "returns font links" do

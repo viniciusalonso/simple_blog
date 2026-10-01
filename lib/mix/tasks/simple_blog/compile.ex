@@ -1,8 +1,6 @@
 defmodule Mix.Tasks.SimpleBlog.Compile do
   use Mix.Task
   require Logger
-  require Floki
-  require SimpleBlog.RewriteHTML.{Stylesheet, Image, PostsLink}
 
   @moduledoc """
   Command responsible for transpile markdown into html
