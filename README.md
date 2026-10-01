@@ -63,7 +63,11 @@ To generate the static version you should run the command:
 $ mix simple_blog.compile
 ```
 
-The command will generate a directory called `output`.
+The command will generate a directory called `output`. To generate it in a custom path, use the `--output` flag:
+
+```console
+$ mix simple_blog.compile --output=/path/to/my_blog
+```
 
 ## Syntax highlighting
 
