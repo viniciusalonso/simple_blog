@@ -48,6 +48,7 @@ defmodule SimpleBlog.Server do
       |> SimpleBlog.Reader.Posts.read_from_dir()
       |> SimpleBlog.Converter.Posts.markdown_to_html()
       |> Enum.map(&SimpleBlog.Post.parse(&1))
+      |> SimpleBlog.Post.sort_by_most_recent()
 
     result =
       File.read("blog/index.html.eex")

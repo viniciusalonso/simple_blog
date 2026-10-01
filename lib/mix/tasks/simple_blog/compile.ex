@@ -34,6 +34,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
       |> SimpleBlog.Reader.Posts.read_from_dir()
       |> SimpleBlog.Converter.Posts.markdown_to_html()
       |> Enum.map(&SimpleBlog.Post.parse(&1))
+      |> SimpleBlog.Post.sort_by_most_recent()
 
     index_html =
       File.read(root_directory <> "/index.html.eex")

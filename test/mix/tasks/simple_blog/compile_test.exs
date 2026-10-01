@@ -57,6 +57,46 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
                ~s(href="posts/2021/01/02/ruby-dig-methods.html")
     end
 
+    test "lists posts on the index from the most recent to the oldest" do
+      posts = [
+        {"2021-03-15-middle-post.md", "Middle post", "2021-03-15"},
+        {"2020-07-01-oldest-post.md", "Oldest post", "2020-07-01"},
+        {"2022-11-20-newest-post.md", "Newest post", "2022-11-20"},
+        {"2019-02-14-ancient-post.md", "Ancient post", "2019-02-14"},
+        {"2023-08-09-latest-post.md", "Latest post", "2023-08-09"}
+      ]
+
+      for {filename, title, date} <- posts do
+        post_path = "test/blog/_posts/" <> filename
+
+        File.write!(post_path, """
+        <!---
+        filename: #{filename}
+        title: #{title}
+        date: #{date}
+        --->
+        """)
+
+        on_exit(fn -> File.rm(post_path) end)
+      end
+
+      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+
+      titles =
+        Regex.scan(~r/<h2 class="post-title">(.*?)<\/h2>/, File.read!("test/output/index.html"),
+          capture: :all_but_first
+        )
+        |> List.flatten()
+
+      assert [
+               "Latest post",
+               "Newest post",
+               "Middle post",
+               "Oldest post",
+               "Ancient post"
+             ] == titles
+    end
+
     test "keeps the original html formatting" do
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
       index_html = File.read!("test/output/index.html")
