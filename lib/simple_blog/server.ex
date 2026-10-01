@@ -35,7 +35,7 @@ defmodule SimpleBlog.Server do
 
     result =
       File.read("blog/post.html.eex")
-      |> SimpleBlog.Converter.Page.eex_to_html(post)
+      |> SimpleBlog.Converter.Page.eex_to_html(post, SimpleBlog.Config.read("blog"))
 
     conn
     |> put_resp_content_type("text/html")
@@ -52,7 +52,7 @@ defmodule SimpleBlog.Server do
 
     result =
       File.read("blog/index.html.eex")
-      |> SimpleBlog.Converter.Page.eex_to_html(posts)
+      |> SimpleBlog.Converter.Page.eex_to_html(posts, SimpleBlog.Config.read("blog"))
 
     conn
     |> put_resp_content_type("text/html")

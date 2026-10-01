@@ -12,10 +12,10 @@ defmodule Blog.PostHtmlEexTest do
     assert markup_templating_index < php_index
   end
 
-  test "stylesheet rewrite leaves the Prism CDN link untouched" do
-    result = SimpleBlog.RewriteHTML.Stylesheet.rewrite(@template, "../../../../")
+  test "links the stylesheet of the configured theme" do
+    html =
+      SimpleBlog.Converter.Page.eex_to_html({:ok, @template}, %SimpleBlog.Post{}, theme: "sepia")
 
-    assert result =~
-             ~s(href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css")
+    assert html =~ ~s(<link rel="stylesheet" href="/css/themes/sepia.css">)
   end
 end

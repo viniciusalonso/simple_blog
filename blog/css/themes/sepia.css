@@ -1,0 +1,38 @@
+/* Sepia: warm paper tones and larger serif type for long reads */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-solarizedlight.min.css") not all and (prefers-color-scheme: dark);
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css") (prefers-color-scheme: dark);
+
+:root {
+  color-scheme: light dark;
+
+  --color-bg: #f8f1e3;
+  --color-text: #3b2f22;
+  --color-link: #2b2118;
+  --color-accent: #9c4a1a;
+  --color-muted: #a08f78;
+  --color-subtle: #7a6a55;
+  --color-label: #7a6a55;
+  --color-border: #e6dccb;
+  --color-surface: #efe5d3;
+
+  --font-body: 'Raleway', sans-serif;
+  --font-heading: 'Merriweather', serif;
+  --font-post: 'Merriweather', serif;
+  --font-code: 'Consolas', Menlo, monospace;
+  --post-font-size: 18px;
+  --post-line-height: 2em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1f1a14;
+    --color-text: #e3d7c3;
+    --color-link: #f1e7d6;
+    --color-accent: #e0965a;
+    --color-muted: #8a7b66;
+    --color-subtle: #b3a48d;
+    --color-label: #b3a48d;
+    --color-border: #3a3127;
+    --color-surface: #2b241c;
+  }
+}

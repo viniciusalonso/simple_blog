@@ -1,0 +1,23 @@
+/* Dark: always dark, regardless of the reader's system preference */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css");
+
+:root {
+  color-scheme: dark;
+
+  --color-bg: #0f1115;
+  --color-text: #d7dae0;
+  --color-link: #e6e9ef;
+  --color-accent: #7aa2f7;
+  --color-muted: #6b7280;
+  --color-subtle: #9aa0aa;
+  --color-label: #9aa0aa;
+  --color-border: #232731;
+  --color-surface: #1a1d24;
+
+  --font-body: 'Raleway', sans-serif;
+  --font-heading: 'Raleway', sans-serif;
+  --font-post: 'Merriweather', serif;
+  --font-code: 'Consolas', Menlo, monospace;
+  --post-font-size: 16px;
+  --post-line-height: 1.9em;
+}

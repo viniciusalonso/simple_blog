@@ -15,19 +15,25 @@ defmodule SimpleBlog.Converter.Page do
       iex> post = %SimpleBlog.Post{title: "post 1"}
       iex> SimpleBlog.Converter.Page.eex_to_html({:ok, "<%= post.title %>"}, post)
       "post 1"
+
+      iex> post = %SimpleBlog.Post{title: "post 1"}
+      iex> SimpleBlog.Converter.Page.eex_to_html({:ok, "<%= config[:theme] %>"}, post, theme: "dark")
+      "dark"
   """
-  def eex_to_html({:ok, body}, posts) when is_list(posts) do
+  def eex_to_html(body, posts, config \\ [])
+
+  def eex_to_html({:ok, body}, posts, config) when is_list(posts) do
     quoted = EEx.compile_string(body)
 
-    case Code.eval_quoted(quoted, posts: posts) do
+    case Code.eval_quoted(quoted, posts: posts, config: config) do
       {result, _bindings} -> result
     end
   end
 
-  def eex_to_html({:ok, body}, post) do
+  def eex_to_html({:ok, body}, post, config) do
     quoted = EEx.compile_string(body)
 
-    case Code.eval_quoted(quoted, post: post) do
+    case Code.eval_quoted(quoted, post: post, config: config) do
       {result, _bindings} -> result
     end
   end

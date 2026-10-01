@@ -13,10 +13,26 @@ defmodule SimpleBlog.ServerTest do
 
     test "serves stylesheets regardless of the accept header" do
       conn =
-        conn(:get, "/css/style.css")
+        conn(:get, "/css/plain.css")
         |> Plug.Conn.put_req_header("user-agent", "test")
         |> Plug.Conn.put_req_header("accept", "*/*")
         |> SimpleBlog.Server.call([])
+
+      assert conn.status == 200
+      assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/css"]
+    end
+
+    test "links the theme set in blog/config.exs" do
+      {theme, _} = Code.eval_file("blog/config.exs") |> elem(0) |> Keyword.pop(:theme)
+
+      conn = SimpleBlog.Server.call(conn(:get, "/"), [])
+
+      assert conn.status == 200
+      assert conn.resp_body =~ ~s(<link rel="stylesheet" href="/css/themes/#{theme}.css">)
+    end
+
+    test "serves theme stylesheets" do
+      conn = SimpleBlog.Server.call(conn(:get, "/css/themes/dark.css"), [])
 
       assert conn.status == 200
       assert Plug.Conn.get_resp_header(conn, "content-type") == ["text/css"]
