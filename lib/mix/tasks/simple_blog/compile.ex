@@ -11,14 +11,26 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
   @doc """
   Generates a static blog at output folder
 
+  The output folder defaults to `output` and can be customized
+  through the `--output` flag.
+
   ## Examples
 
       iex> Mix.Tasks.SimpleBlog.Compile.run([])
+
+      iex> Mix.Tasks.SimpleBlog.Compile.run(["--output=/tmp/my_blog"])
   """
   @impl Mix.Task
-  def run([]), do: run(["blog", "output"])
+  def run(args) do
+    {opts, positional, _invalid} = OptionParser.parse(args, strict: [output: :string])
 
-  def run([root_directory, output_directory]) do
+    case positional do
+      [] -> compile("blog", Keyword.get(opts, :output, "output"))
+      [root_directory, output_directory] -> compile(root_directory, output_directory)
+    end
+  end
+
+  defp compile(root_directory, output_directory) do
     posts =
       root_directory
       |> SimpleBlog.Reader.Posts.read_from_dir()
@@ -32,7 +44,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
       |> SimpleBlog.RewriteHTML.Image.rewrite("./")
       |> SimpleBlog.RewriteHTML.PostsLink.rewrite()
 
-    File.mkdir(output_directory)
+    File.mkdir_p(output_directory)
     {:ok, file} = File.open(output_directory <> "/index.html", [:write])
     IO.binwrite(file, index_html)
     File.close(file)

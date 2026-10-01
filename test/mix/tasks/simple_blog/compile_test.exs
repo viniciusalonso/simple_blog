@@ -12,6 +12,18 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
       assert File.exists?("test/output")
     end
 
+    test "generates the static blog at the path given by --output" do
+      output_directory = "test/output/custom/nested"
+
+      File.cd!("test", fn ->
+        Mix.Tasks.SimpleBlog.Compile.run(["--output=output/custom/nested"])
+      end)
+
+      assert File.exists?(output_directory <> "/index.html")
+      assert File.exists?(output_directory <> "/css/style.css")
+      assert File.exists?(output_directory <> "/images/avatar.png")
+    end
+
     test "converts posts to html" do
       capture_io(fn -> Mix.Tasks.SimpleBlog.Post.run(["My First Blog Post", "test/blog"]) end)
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
