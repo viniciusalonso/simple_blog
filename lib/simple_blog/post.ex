@@ -47,6 +47,19 @@ defmodule SimpleBlog.Post do
   end
 
   @doc """
+  Sort posts from the most recent to the oldest
+
+  ## Examples
+
+      iex> posts = [%SimpleBlog.Post{date: "2023-10-04"}, %SimpleBlog.Post{date: "2024-01-15"}, %SimpleBlog.Post{date: "2023-12-01"}]
+      iex> SimpleBlog.Post.sort_by_most_recent(posts)
+      [%SimpleBlog.Post{date: "2024-01-15"}, %SimpleBlog.Post{date: "2023-12-01"}, %SimpleBlog.Post{date: "2023-10-04"}]
+  """
+  def sort_by_most_recent(posts) when is_list(posts) do
+    Enum.sort_by(posts, & &1.date, :desc)
+  end
+
+  @doc """
   Generate filename for blog post
 
   ## Examples

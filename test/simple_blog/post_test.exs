@@ -31,4 +31,25 @@ defmodule SimpleBlog.PostTest do
              } == struct
     end
   end
+
+  describe "sort_by_most_recent" do
+    test "orders posts from the most recent to the oldest" do
+      posts = [
+        %SimpleBlog.Post{title: "Oldest", date: "2022-05-10"},
+        %SimpleBlog.Post{title: "Newest", date: "2024-01-02"},
+        %SimpleBlog.Post{title: "Middle", date: "2023-12-31"}
+      ]
+
+      titles =
+        posts
+        |> SimpleBlog.Post.sort_by_most_recent()
+        |> Enum.map(& &1.title)
+
+      assert ["Newest", "Middle", "Oldest"] == titles
+    end
+
+    test "returns an empty list when there are no posts" do
+      assert [] == SimpleBlog.Post.sort_by_most_recent([])
+    end
+  end
 end
