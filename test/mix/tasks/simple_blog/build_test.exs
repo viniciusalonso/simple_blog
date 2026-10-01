@@ -1,14 +1,21 @@
-defmodule Mix.Tasks.SimpleBlog.CompileTest do
+defmodule Mix.Tasks.SimpleBlog.BuildTest do
   use ExUnit.Case
   import ExUnit.CaptureIO
 
+  @args ["--source", "test/blog", "--output", "test/output"]
+
   describe "run/1" do
     setup do
-      on_exit(fn -> File.rm_rf("test/output") end)
+      Mix.shell(Mix.Shell.Process)
+
+      on_exit(fn ->
+        Mix.shell(Mix.Shell.IO)
+        File.rm_rf("test/output")
+      end)
     end
 
     test "create a directory to static blog" do
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
       assert File.exists?("test/output")
     end
 
@@ -16,8 +23,10 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
       output_directory = "test/output/custom/nested"
 
       File.cd!("test", fn ->
-        Mix.Tasks.SimpleBlog.Compile.run(["--output=output/custom/nested"])
+        Mix.Tasks.SimpleBlog.Build.run(["--output=output/custom/nested"])
       end)
+
+      assert_received {:mix_shell, :info, ["Blog built at output/custom/nested with 0 posts"]}
 
       assert File.exists?(output_directory <> "/index.html")
       assert File.exists?(output_directory <> "/css/plain.css")
@@ -26,7 +35,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
 
     test "converts posts to html" do
       capture_io(fn -> Mix.Tasks.SimpleBlog.Gen.Post.run(["My First Blog Post", "test/blog"]) end)
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
 
       today = NaiveDateTime.local_now() |> NaiveDateTime.to_date() |> Date.to_string()
       dir = SimpleBlog.Post.generate_html_dir(%SimpleBlog.Post{date: today}, "test/output/posts")
@@ -49,7 +58,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
 
       on_exit(fn -> File.rm(post_path) end)
 
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
 
       assert File.exists?("test/output/posts/2021/01/02/ruby-dig-methods.html")
 
@@ -80,7 +89,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
         on_exit(fn -> File.rm(post_path) end)
       end
 
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
 
       titles =
         Regex.scan(~r/<h2 class="post-title">(.*?)<\/h2>/, File.read!("test/output/index.html"),
@@ -98,7 +107,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
     end
 
     test "links the light theme when there is no config.exs" do
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
 
       assert File.read!("test/output/index.html") =~
                ~s(<link rel="stylesheet" href="./css/themes/light.css">)
@@ -122,7 +131,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
         File.rm(post_path)
       end)
 
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
 
       assert File.read!("test/output/index.html") =~
                ~s(<link rel="stylesheet" href="./css/themes/solarized.css">)
@@ -131,8 +140,79 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
                ~s(<link rel="stylesheet" href="../../../../css/themes/solarized.css">)
     end
 
+    test "reads the blog from the directory given by --source" do
+      File.mkdir_p!("test/output")
+      File.cp_r!("test/blog", "test/output/source")
+
+      File.write!("test/output/source/_posts/2021-01-02-from-source.md", """
+      <!---
+      filename: 2021-01-02-from-source.md
+      title: From source
+      date: 2021-01-02
+      --->
+      """)
+
+      Mix.Tasks.SimpleBlog.Build.run([
+        "--source",
+        "test/output/source",
+        "--output",
+        "test/output/site"
+      ])
+
+      assert File.exists?("test/output/site/posts/2021/01/02/from-source.html")
+      assert_received {:mix_shell, :info, ["Blog built at test/output/site with 1 post"]}
+    end
+
+    test "removes posts that no longer exist from a previous build" do
+      stale = "test/output/posts/2020/01/01/deleted-post.html"
+      File.mkdir_p!(Path.dirname(stale))
+      File.write!(stale, "old")
+
+      Mix.Tasks.SimpleBlog.Build.run(@args)
+
+      refute File.exists?(stale)
+    end
+
+    test "keeps files in the output it did not generate" do
+      File.mkdir_p!("test/output")
+      File.write!("test/output/CNAME", "blog.example.com")
+
+      Mix.Tasks.SimpleBlog.Build.run(@args)
+
+      assert File.read!("test/output/CNAME") == "blog.example.com"
+    end
+
+    test "raises when the blog directory does not exist" do
+      assert_raise Mix.Error, ~r/The blog directory missing was not found/, fn ->
+        Mix.Tasks.SimpleBlog.Build.run(["--source", "missing"])
+      end
+    end
+
+    test "raises naming the missing template" do
+      File.mkdir_p!("test/output")
+      File.cp_r!("test/blog", "test/output/source")
+      File.rm!("test/output/source/post.html.eex")
+
+      assert_raise Mix.Error, ~r{test/output/source/post.html.eex was not found}, fn ->
+        Mix.Tasks.SimpleBlog.Build.run([
+          "--source",
+          "test/output/source",
+          "--output",
+          "test/output/site"
+        ])
+      end
+    end
+
+    test "shows the usage for unknown flags or extra arguments" do
+      for args <- [["--ouput=dist"], ["test/blog", "test/output"]] do
+        assert_raise Mix.Error, ~r/mix simple_blog.build \[--source DIR\] \[--output DIR\]/, fn ->
+          Mix.Tasks.SimpleBlog.Build.run(args)
+        end
+      end
+    end
+
     test "keeps the original html formatting" do
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
       index_html = File.read!("test/output/index.html")
 
       assert index_html =~ "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n"
@@ -143,7 +223,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
     end
 
     test "creates css files" do
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
       css_dir = "test/output/css/"
 
       assert File.exists?(css_dir <> "plain.css")
@@ -155,10 +235,15 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
     end
 
     test "creates images files" do
-      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      Mix.Tasks.SimpleBlog.Build.run(@args)
       images_dir = "test/output/images/"
 
       assert File.exists?(images_dir <> "avatar.png")
     end
+  end
+
+  test "has a short description for mix help" do
+    assert Mix.Task.shortdoc(Mix.Tasks.SimpleBlog.Build) ==
+             "Builds the static blog from blog/ into output/"
   end
 end
