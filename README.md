@@ -53,7 +53,11 @@ $ mix clean
 $ mix simple_blog.server
 ```
 
-The server will be running at `http://localhost:4000`.
+The server will be running at `http://localhost:4000`. If that port is already in use, pick another one with the `--port` flag:
+
+```console
+$ mix simple_blog.server --port 4001
+```
 
 ### Generate static blog
 
