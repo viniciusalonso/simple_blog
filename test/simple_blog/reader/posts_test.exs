@@ -4,8 +4,8 @@ defmodule SimpleBlog.Reader.PostsTest do
 
   setup do
     capture_io(fn ->
-      Mix.Tasks.SimpleBlog.Post.run(["my first job day", "test/blog"])
-      Mix.Tasks.SimpleBlog.Post.run(["10 tips for a junior develop", "test/blog"])
+      Mix.Tasks.SimpleBlog.Gen.Post.run(["my first job day", "test/blog"])
+      Mix.Tasks.SimpleBlog.Gen.Post.run(["10 tips for a junior develop", "test/blog"])
     end)
 
     on_exit(fn ->
@@ -24,7 +24,8 @@ defmodule SimpleBlog.Reader.PostsTest do
       content = SimpleBlog.Reader.Posts.read_from_dir("test/blog")
 
       today =
-        Date.utc_today()
+        NaiveDateTime.local_now()
+        |> NaiveDateTime.to_date()
         |> Date.to_string()
 
       assert Enum.sort(content) ==
@@ -44,7 +45,8 @@ defmodule SimpleBlog.Reader.PostsTest do
   describe "read_post" do
     test "returns only markdown content" do
       today =
-        Date.utc_today()
+        NaiveDateTime.local_now()
+        |> NaiveDateTime.to_date()
         |> Date.to_string()
 
       filename = "#{today}-my-first-job-day.md"

@@ -39,10 +39,10 @@ $ mix deps.get
 ### Generate new blog post
 
 ```console
-$ mix simple_blog.post "10 tips for new developers"
+$ mix simple_blog.gen.post "10 tips for new developers"
 ```
 
-The file will be created at `blog/_posts/yyyy-mm-dd-10-tips-for-new-developers.md`.
+The file will be created at `blog/_posts/yyyy-mm-dd-10-tips-for-new-developers.md`, using today's date in your local timezone. Accents and punctuation are removed from the filename, so `"Introdução ao Elixir: o básico?"` becomes `yyyy-mm-dd-introducao-ao-elixir-o-basico.md`, while the post keeps the original title. If a post with the same filename already exists, the command stops without changing it.
 
 ### Running local server
 
@@ -53,21 +53,33 @@ $ mix clean
 $ mix simple_blog.server
 ```
 
-The server will be running at `http://localhost:4000`.
+The server will be running at `http://localhost:4000`. If that port is already in use, pick another one with the `--port` flag:
+
+```console
+$ mix simple_blog.server --port 4001
+```
 
 ### Generate static blog
 
 To generate the static version you should run the command:
 
 ```console
-$ mix simple_blog.compile
+$ mix simple_blog.build
 ```
 
 The command will generate a directory called `output`. To generate it in a custom path, use the `--output` flag:
 
 ```console
-$ mix simple_blog.compile --output=/path/to/my_blog
+$ mix simple_blog.build --output=/path/to/my_blog
 ```
+
+To build a blog that lives in another directory, use the `--source` flag:
+
+```console
+$ mix simple_blog.build --source=path/to/blog
+```
+
+Every build replaces `index.html`, `posts/`, `css/` and `images/` in the output directory, so deleted posts are not published. Other files there, such as a `CNAME` for GitHub Pages, are kept.
 
 ## Syntax highlighting
 
@@ -95,7 +107,7 @@ The same works for `<img>` tags in your posts and templates:
 <img src="/images/avatar.png" alt="My avatar" class="avatar">
 ```
 
-When you run `mix simple_blog.compile`, the whole `blog/images/` directory is copied to `output/images/`. Absolute image paths are rewritten to relative ones, so the generated blog works from any location. For example, `/images/avatar.png` becomes `./images/avatar.png` in `index.html` and `../../../../images/avatar.png` in posts.
+When you run `mix simple_blog.build`, the whole `blog/images/` directory is copied to `output/images/`. Absolute image paths are rewritten to relative ones, so the generated blog works from any location. For example, `/images/avatar.png` becomes `./images/avatar.png` in `index.html` and `../../../../images/avatar.png` in posts.
 
 Only `src` values that start with a single `/` are rewritten. These are left as they are:
 
@@ -124,7 +136,7 @@ Pick a theme in `blog/config.exs`:
 
 `solarized` and `sepia` switch to a dark variant automatically when the reader's system is in dark mode. `light` is always light and `dark` is always dark. Each theme also picks a matching [Prism.js](https://prismjs.com/) style for code blocks.
 
-If `blog/config.exs` doesn't exist, the `light` theme is used. An unknown theme stops `mix simple_blog.compile` with the list of available themes.
+If `blog/config.exs` doesn't exist, the `light` theme is used. An unknown theme stops `mix simple_blog.build` with the list of available themes.
 
 ### Screenshots
 
