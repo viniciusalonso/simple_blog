@@ -1,18 +1,17 @@
 defmodule SimpleBlog.RewriteHTML.Stylesheet do
-  require Floki
+  import SimpleBlog.RewriteHTML
 
   def rewrite(html, path) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "link", fn
-      {"link", [{"rel", "stylesheet"}, {"href", href}]} ->
-        if String.starts_with?(href, "/") do
-          {"link",
-           [{"rel", "stylesheet"}, {"href", String.replace(href, "/", path, global: false)}]}
-        else
-          {"link", [{"rel", "stylesheet"}, {"href", href}]}
-        end
+    update_tags(html, "link", fn element ->
+      if attribute(element, "rel") == "stylesheet" do
+        update_attribute(element, "href", &rewrite_href(&1, path))
+      else
+        element
+      end
     end)
-    |> Floki.raw_html()
   end
+
+  defp rewrite_href("//" <> _ = href, _path), do: href
+  defp rewrite_href("/" <> href, path), do: path <> href
+  defp rewrite_href(href, _path), do: href
 end

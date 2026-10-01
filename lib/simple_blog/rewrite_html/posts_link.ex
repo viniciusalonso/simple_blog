@@ -1,14 +1,18 @@
 defmodule SimpleBlog.RewriteHTML.PostsLink do
-  require Floki
+  import SimpleBlog.RewriteHTML
 
   def rewrite(html) do
-    {:ok, document} = Floki.parse_document(html)
-
-    Floki.find_and_update(document, "a.post-link", fn element ->
-      {"a", [{"href", x} | attrs]} = element
-      {"a", [{"href", filename(x)} | attrs]}
+    update_tags(html, "a", fn element ->
+      if has_class?(element, "post-link") do
+        update_attribute(element, "href", &rewrite_href/1)
+      else
+        element
+      end
     end)
-    |> Floki.raw_html()
+  end
+
+  defp rewrite_href(href) do
+    if String.contains?(href, "?post="), do: filename(href), else: href
   end
 
   defp filename(x) do

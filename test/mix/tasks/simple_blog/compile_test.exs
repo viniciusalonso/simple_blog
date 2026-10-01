@@ -57,6 +57,17 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
                ~s(href="posts/2021/01/02/ruby-dig-methods.html")
     end
 
+    test "keeps the original html formatting" do
+      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+      index_html = File.read!("test/output/index.html")
+
+      assert index_html =~ "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n"
+      assert index_html =~ ~s(\n    <link rel="stylesheet" href="./css/style.css">\n)
+
+      assert index_html =~
+               ~s(\n        <img src="./images/avatar.png" alt="avatar" class="avatar">\n)
+    end
+
     test "creates css files" do
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
       css_dir = "test/output/css/"
