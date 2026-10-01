@@ -20,7 +20,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
       end)
 
       assert File.exists?(output_directory <> "/index.html")
-      assert File.exists?(output_directory <> "/css/style.css")
+      assert File.exists?(output_directory <> "/css/plain.css")
       assert File.exists?(output_directory <> "/images/avatar.png")
     end
 
@@ -97,12 +97,46 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
              ] == titles
     end
 
+    test "links the light theme when there is no config.exs" do
+      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+
+      assert File.read!("test/output/index.html") =~
+               ~s(<link rel="stylesheet" href="./css/themes/light.css">)
+    end
+
+    test "links the theme set in config.exs on index and posts" do
+      File.write!("test/blog/config.exs", ~s([theme: "solarized"]))
+
+      post_path = "test/blog/_posts/2021-01-02-themed-post.md"
+
+      File.write!(post_path, """
+      <!---
+      filename: 2021-01-02-themed-post.md
+      title: Themed post
+      date: 2021-01-02
+      --->
+      """)
+
+      on_exit(fn ->
+        File.rm("test/blog/config.exs")
+        File.rm(post_path)
+      end)
+
+      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+
+      assert File.read!("test/output/index.html") =~
+               ~s(<link rel="stylesheet" href="./css/themes/solarized.css">)
+
+      assert File.read!("test/output/posts/2021/01/02/themed-post.html") =~
+               ~s(<link rel="stylesheet" href="../../../../css/themes/solarized.css">)
+    end
+
     test "keeps the original html formatting" do
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
       index_html = File.read!("test/output/index.html")
 
       assert index_html =~ "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n"
-      assert index_html =~ ~s(\n    <link rel="stylesheet" href="./css/style.css">\n)
+      assert index_html =~ ~s(\n    <link rel="stylesheet" href="./css/plain.css">\n)
 
       assert index_html =~
                ~s(\n        <img src="./images/avatar.png" alt="avatar" class="avatar">\n)
@@ -112,10 +146,12 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
       css_dir = "test/output/css/"
 
-      assert File.exists?(css_dir <> "_solarized-light.css")
       assert File.exists?(css_dir <> "plain.css")
       assert File.exists?(css_dir <> "reset.css")
-      assert File.exists?(css_dir <> "style.css")
+
+      for theme <- ["light", "dark", "solarized", "sepia"] do
+        assert File.exists?(css_dir <> "themes/#{theme}.css")
+      end
     end
 
     test "creates images files" do

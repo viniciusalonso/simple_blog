@@ -1,0 +1,23 @@
+/* Light: the original plainwhite look, always light */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css");
+
+:root {
+  color-scheme: light;
+
+  --color-bg: #ffffff;
+  --color-text: #222222;
+  --color-link: #000000;
+  --color-accent: #0a59b0;
+  --color-muted: #aaaaaa;
+  --color-subtle: #555555;
+  --color-label: #777777;
+  --color-border: #eeeeee;
+  --color-surface: #f0f0f0;
+
+  --font-body: 'Raleway', sans-serif;
+  --font-heading: 'Raleway', sans-serif;
+  --font-post: 'Merriweather', serif;
+  --font-code: 'Consolas', Menlo, monospace;
+  --post-font-size: 16px;
+  --post-line-height: 1.9em;
+}

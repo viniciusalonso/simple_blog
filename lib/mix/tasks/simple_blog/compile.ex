@@ -29,6 +29,8 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
   end
 
   defp compile(root_directory, output_directory) do
+    config = SimpleBlog.Config.read(root_directory)
+
     posts =
       root_directory
       |> SimpleBlog.Reader.Posts.read_from_dir()
@@ -38,7 +40,7 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
 
     index_html =
       File.read(root_directory <> "/index.html.eex")
-      |> SimpleBlog.Converter.Page.eex_to_html(posts)
+      |> SimpleBlog.Converter.Page.eex_to_html(posts, config)
       |> SimpleBlog.RewriteHTML.Stylesheet.rewrite("./")
       |> SimpleBlog.RewriteHTML.Image.rewrite("./")
       |> SimpleBlog.RewriteHTML.PostsLink.rewrite()
@@ -51,15 +53,15 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     File.cp_r(root_directory <> "/css", output_directory <> "/css")
     File.cp_r(root_directory <> "/images", output_directory <> "/images")
 
-    write_html_posts(root_directory, output_directory, posts)
+    write_html_posts(root_directory, output_directory, posts, config)
   end
 
-  defp write_html_posts(root_directory, output_directory, posts) do
+  defp write_html_posts(root_directory, output_directory, posts, config) do
     posts
     |> Enum.map(&create_folders(&1, output_directory))
 
     posts
-    |> Enum.map(&create_posts_html(&1, root_directory, output_directory))
+    |> Enum.map(&create_posts_html(&1, root_directory, output_directory, config))
   end
 
   defp create_folders(post, output_directory) do
@@ -68,13 +70,13 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
     |> File.mkdir_p()
   end
 
-  def create_posts_html(post, root_directory, output_directory) do
+  def create_posts_html(post, root_directory, output_directory, config) do
     dir = SimpleBlog.Post.generate_html_dir(post, output_directory <> "/posts/")
     filename = SimpleBlog.Post.generate_html_filename(post)
 
     result =
       File.read(root_directory <> "/post.html.eex")
-      |> SimpleBlog.Converter.Page.eex_to_html(post)
+      |> SimpleBlog.Converter.Page.eex_to_html(post, config)
       |> SimpleBlog.RewriteHTML.Stylesheet.rewrite("../../../../")
       |> SimpleBlog.RewriteHTML.Image.rewrite("../../../../")
       |> SimpleBlog.RewriteHTML.BackLink.rewrite()

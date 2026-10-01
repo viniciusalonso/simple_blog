@@ -1,0 +1,43 @@
+/* Solarized: Ethan Schoonover's palette, light or dark following the reader's system */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-solarizedlight.min.css") not all and (prefers-color-scheme: dark);
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-solarized-dark-atom.min.css") (prefers-color-scheme: dark);
+
+:root {
+  color-scheme: light dark;
+
+  --color-bg: #fdf6e3;
+  --color-text: #586e75;
+  --color-link: #073642;
+  --color-accent: #268bd2;
+  --color-muted: #93a1a1;
+  --color-subtle: #657b83;
+  --color-label: #657b83;
+  --color-border: #eee8d5;
+  --color-surface: #eee8d5;
+
+  --font-body: 'Raleway', sans-serif;
+  --font-heading: 'Raleway', sans-serif;
+  --font-post: 'Merriweather', serif;
+  --font-code: 'Consolas', Menlo, monospace;
+  --post-font-size: 16px;
+  --post-line-height: 1.9em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #002b36;
+    --color-text: #93a1a1;
+    --color-link: #eee8d5;
+    --color-accent: #2aa198;
+    --color-muted: #586e75;
+    --color-subtle: #839496;
+    --color-label: #839496;
+    --color-border: #073642;
+    --color-surface: #073642;
+  }
+}
+
+/* Both Prism Solarized themes share the page background, so lift code blocks */
+pre[class*="language-"] {
+  background: var(--color-surface);
+}
