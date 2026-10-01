@@ -39,10 +39,10 @@ $ mix deps.get
 ### Generate new blog post
 
 ```console
-$ mix simple_blog.post "10 tips for new developers"
+$ mix simple_blog.gen.post "10 tips for new developers"
 ```
 
-The file will be created at `blog/_posts/yyyy-mm-dd-10-tips-for-new-developers.md`.
+The file will be created at `blog/_posts/yyyy-mm-dd-10-tips-for-new-developers.md`, using today's date in your local timezone. Accents and punctuation are removed from the filename, so `"Introdução ao Elixir: o básico?"` becomes `yyyy-mm-dd-introducao-ao-elixir-o-basico.md`, while the post keeps the original title. If a post with the same filename already exists, the command stops without changing it.
 
 ### Running local server
 

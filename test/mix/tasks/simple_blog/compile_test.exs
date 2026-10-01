@@ -25,10 +25,10 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
     end
 
     test "converts posts to html" do
-      capture_io(fn -> Mix.Tasks.SimpleBlog.Post.run(["My First Blog Post", "test/blog"]) end)
+      capture_io(fn -> Mix.Tasks.SimpleBlog.Gen.Post.run(["My First Blog Post", "test/blog"]) end)
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
 
-      today = Date.utc_today() |> Date.to_string()
+      today = NaiveDateTime.local_now() |> NaiveDateTime.to_date() |> Date.to_string()
       dir = SimpleBlog.Post.generate_html_dir(%SimpleBlog.Post{date: today}, "test/output/posts")
 
       assert File.exists?(dir <> "my-first-blog-post.html")

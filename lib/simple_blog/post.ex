@@ -16,12 +16,29 @@ defmodule SimpleBlog.Post do
       "2023-10-04-my-first-blog-post.md"
   """
   def generate_filename(%SimpleBlog.Post{title: title, date: date}) do
-    normalized_title =
-      title
-      |> String.downcase()
-      |> String.replace(" ", "-", global: true)
+    "#{date}-#{slugify(title)}.#{@extension}"
+  end
 
-    "#{date}-#{normalized_title}.#{@extension}"
+  @doc """
+  Turn a title into a slug safe for filenames and URLs
+
+  Accents are removed and anything other than letters and numbers becomes a hyphen.
+
+  ## Examples
+
+      iex> SimpleBlog.Post.slugify("Introdução ao Elixir: o básico?")
+      "introducao-ao-elixir-o-basico"
+
+      iex> SimpleBlog.Post.slugify("CI/CD  com GitHub")
+      "ci-cd-com-github"
+  """
+  def slugify(title) do
+    title
+    |> String.normalize(:nfd)
+    |> String.replace(~r/\p{Mn}/u, "")
+    |> String.downcase()
+    |> String.replace(~r/[^a-z0-9]+/, "-")
+    |> String.trim("-")
   end
 
   @doc """

@@ -9,9 +9,9 @@ defmodule Mix.Tasks.SimpleBlog.ServerTest do
       {:ok, pid} =
         Task.start(fn -> Mix.Tasks.SimpleBlog.Server.run(["--port", Integer.to_string(port)]) end)
 
-      on_exit(fn -> Process.exit(pid, :shutdown) end)
-
       assert wait_until_listening(port, 50)
+
+      stop_server(pid)
     end
 
     test "explains how to pick another port when the port is in use" do
@@ -44,6 +44,11 @@ defmodule Mix.Tasks.SimpleBlog.ServerTest do
   test "has a short description for mix help" do
     assert Mix.Task.shortdoc(Mix.Tasks.SimpleBlog.Server) ==
              "Starts a local server to preview the blog"
+  end
+
+  defp stop_server(pid) do
+    Process.exit(pid, :shutdown)
+    :ok = Plug.Cowboy.shutdown(SimpleBlog.Server.HTTP)
   end
 
   defp free_port do

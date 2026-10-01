@@ -26,45 +26,19 @@ defmodule Mix.Tasks.SimpleBlog.Server do
 
     Mix.Task.run("app.start")
 
-    webserver = [
-      {
-        Plug.Cowboy,
-        plug: SimpleBlog.Server, scheme: :http, options: [port: port]
-      }
-    ]
-
-    case start_webserver(webserver) do
+    case Plug.Cowboy.http(SimpleBlog.Server, [], port: port) do
       {:ok, _} ->
         Logger.info("Server running on localhost:#{port}")
         Process.sleep(:infinity)
 
+      {:error, :eaddrinuse} ->
+        Mix.raise(
+          "Port #{port} is already in use. " <>
+            "Stop the process using it or pick another port, e.g. --port #{port + 1}"
+        )
+
       {:error, reason} ->
-        if port_in_use?(reason) do
-          Mix.raise(
-            "Port #{port} is already in use. " <>
-              "Stop the process using it or pick another port, e.g. --port #{port + 1}"
-          )
-        else
-          Mix.raise("Could not start the server on port #{port}: #{inspect(reason)}")
-        end
-    end
-  end
-
-  # A listener that fails to start also sends an exit signal, which would kill
-  # this process before we could report the error
-  defp start_webserver(webserver) do
-    trap_exit = Process.flag(:trap_exit, true)
-    result = Supervisor.start_link(webserver, strategy: :one_for_one)
-    Process.flag(:trap_exit, trap_exit)
-
-    with {:error, _reason} <- result do
-      receive do
-        {:EXIT, _pid, _reason} -> :ok
-      after
-        0 -> :ok
-      end
-
-      result
+        Mix.raise("Could not start the server on port #{port}: #{inspect(reason)}")
     end
   end
 
@@ -85,10 +59,4 @@ defmodule Mix.Tasks.SimpleBlog.Server do
         """)
     end
   end
-
-  defp port_in_use?({:shutdown, {:failed_to_start_child, _, reason}}),
-    do: port_in_use?(reason)
-
-  defp port_in_use?({:listen_error, _, :eaddrinuse}), do: true
-  defp port_in_use?(_reason), do: false
 end
