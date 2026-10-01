@@ -126,6 +126,26 @@ Pick a theme in `blog/config.exs`:
 
 If `blog/config.exs` doesn't exist, the `light` theme is used. An unknown theme stops `mix simple_blog.compile` with the list of available themes.
 
+### Screenshots
+
+**`light`**
+
+![Light theme](docs/images/themes/light.png)
+
+**`dark`**
+
+![Dark theme](docs/images/themes/dark.png)
+
+**`solarized`** (light and dark variants)
+
+![Solarized theme](docs/images/themes/solarized.png)
+![Solarized theme, dark variant](docs/images/themes/solarized-dark.png)
+
+**`sepia`** (light and dark variants)
+
+![Sepia theme](docs/images/themes/sepia.png)
+![Sepia theme, dark variant](docs/images/themes/sepia-dark.png)
+
 ### Creating a theme
 
 Themes are plain CSS files in `blog/css/themes/`. The layout lives in `blog/css/plain.css`, and a theme only sets the CSS variables it uses (`--color-bg`, `--color-text`, `--color-accent`, `--font-post`, …). To create your own, copy one of the existing themes, for example `blog/css/themes/ocean.css`, change the values and set `theme: "ocean"` in `blog/config.exs`.
