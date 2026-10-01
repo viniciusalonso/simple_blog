@@ -1,5 +1,6 @@
 defmodule Mix.Tasks.SimpleBlog.CompileTest do
   use ExUnit.Case
+  import ExUnit.CaptureIO
 
   describe "run/1" do
     setup do
@@ -12,7 +13,7 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
     end
 
     test "converts posts to html" do
-      Mix.Tasks.SimpleBlog.Post.run(["My First Blog Post", "test/blog"])
+      capture_io(fn -> Mix.Tasks.SimpleBlog.Post.run(["My First Blog Post", "test/blog"]) end)
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
 
       today = Date.utc_today() |> Date.to_string()

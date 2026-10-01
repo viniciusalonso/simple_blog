@@ -29,7 +29,7 @@ defmodule Mix.Tasks.SimpleBlog.PostTest do
     end
 
     test "creates a new markdown file for blog post" do
-      Mix.Tasks.SimpleBlog.Post.run(["My First Blog Post", "test/blog"])
+      capture_io(fn -> Mix.Tasks.SimpleBlog.Post.run(["My First Blog Post", "test/blog"]) end)
 
       today = Date.utc_today() |> Date.to_string()
 

@@ -1,9 +1,12 @@
 defmodule SimpleBlog.Reader.PostsTest do
   use ExUnit.Case
+  import ExUnit.CaptureIO
 
   setup do
-    Mix.Tasks.SimpleBlog.Post.run(["my first job day", "test/blog"])
-    Mix.Tasks.SimpleBlog.Post.run(["10 tips for a junior develop", "test/blog"])
+    capture_io(fn ->
+      Mix.Tasks.SimpleBlog.Post.run(["my first job day", "test/blog"])
+      Mix.Tasks.SimpleBlog.Post.run(["10 tips for a junior develop", "test/blog"])
+    end)
 
     on_exit(fn ->
       {:ok, files} = File.ls("test/blog/_posts/")
