@@ -56,5 +56,11 @@ defmodule SimpleBlog.Reader.PostsTest do
         SimpleBlog.Reader.Posts.read_post("test_v2/blog", "my first")
       end
     end
+
+    test "raises exception when post not exists" do
+      assert_raise RuntimeError, "Post test/blog/_posts/missing.md not found", fn ->
+        SimpleBlog.Reader.Posts.read_post("test/blog", "missing.md")
+      end
+    end
   end
 end
