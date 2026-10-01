@@ -33,8 +33,13 @@ defmodule SimpleBlog.Reader.Posts do
     post_path = posts_directory <> post
 
     case File.read(post_path) do
-      {:ok, file} -> pipeline(posts_directory, file)
-      {:error, :enoent} -> raise("Directory #{posts_directory} not found")
+      {:ok, file} ->
+        pipeline(posts_directory, file)
+
+      {:error, :enoent} ->
+        if File.dir?(posts_directory),
+          do: raise("Post #{post_path} not found"),
+          else: raise("Directory #{posts_directory} not found")
     end
   end
 

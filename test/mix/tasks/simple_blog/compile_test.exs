@@ -23,6 +23,27 @@ defmodule Mix.Tasks.SimpleBlog.CompileTest do
       on_exit(fn -> File.rm("test/blog/_posts/#{today}-my-first-blog-post.md") end)
     end
 
+    test "names post html after its filename, not its title" do
+      post_path = "test/blog/_posts/2021-01-02-ruby-dig-methods.md"
+
+      File.write!(post_path, """
+      <!---
+      filename: 2021-01-02-ruby-dig-methods.md
+      title: Ruby tip: dig methods your best friends
+      date: 2021-01-02
+      --->
+      """)
+
+      on_exit(fn -> File.rm(post_path) end)
+
+      Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
+
+      assert File.exists?("test/output/posts/2021/01/02/ruby-dig-methods.html")
+
+      assert File.read!("test/output/index.html") =~
+               ~s(href="posts/2021/01/02/ruby-dig-methods.html")
+    end
+
     test "creates css files" do
       Mix.Tasks.SimpleBlog.Compile.run(["test/blog", "test/output"])
       css_dir = "test/output/css/"

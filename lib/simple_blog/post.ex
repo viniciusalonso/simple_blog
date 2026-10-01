@@ -64,13 +64,11 @@ defmodule SimpleBlog.Post do
 
   ## Examples
 
-      iex> SimpleBlog.Post.generate_html_filename(%SimpleBlog.Post{title: "doctests with elixir"})
+      iex> SimpleBlog.Post.generate_html_filename(%SimpleBlog.Post{filename: "2023-10-04-doctests-with-elixir.md"})
       "doctests-with-elixir.html"
   """
-  def generate_html_filename(%SimpleBlog.Post{title: title}) do
-    title
-    |> String.replace(" ", "-")
-    |> String.downcase()
-    |> Kernel.<>(".html")
+  def generate_html_filename(%SimpleBlog.Post{filename: filename}) do
+    <<_date::binary-size(10), "-", slug::binary>> = Path.basename(filename, ".#{@extension}")
+    slug <> ".html"
   end
 end

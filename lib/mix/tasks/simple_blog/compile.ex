@@ -60,13 +60,6 @@ defmodule Mix.Tasks.SimpleBlog.Compile do
   def create_posts_html(post, root_directory, output_directory) do
     dir = SimpleBlog.Post.generate_html_dir(post, output_directory <> "/posts/")
     filename = SimpleBlog.Post.generate_html_filename(post)
-    postname = SimpleBlog.Post.generate_filename(post)
-
-    post =
-      root_directory
-      |> SimpleBlog.Reader.Posts.read_post(postname)
-      |> SimpleBlog.Converter.Posts.markdown_to_html()
-      |> SimpleBlog.Post.parse()
 
     result =
       File.read(root_directory <> "/post.html.eex")
